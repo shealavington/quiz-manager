@@ -75,7 +75,6 @@
         </nav>
 
         <main class="py-4">
-            {{ dd(Auth::user()->role()->name) }}
             @yield('content')
         </main>
     </div>
