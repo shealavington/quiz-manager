@@ -146,7 +146,7 @@
                 /* This is only for development */
 
                 this.quiz.updateName("About \"the creator\"")
-                this.quiz.updateDescription("Answer questions about the creator of this quiz.")
+                this.quiz.updateDescription("Answer questions about the creator of this quiz manager.")
 
                 this.quiz.addQuestion("What is his name?")
                 this.quiz.questions[0].addAnswer("Kris", false)
