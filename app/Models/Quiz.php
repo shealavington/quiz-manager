@@ -19,13 +19,13 @@ class Quiz extends Model
      */
     public function questions()
     {
-        return $this->hasMany('App\Models\QuizQuestions', 'quiz_id', 'id');
+        return $this->hasMany('App\Models\QuizQuestion', 'quiz_id', 'id');
     }
     /**
      * Get the answers for the questions.
      */
     public function answers()
     {
-        return $this->hasManyThrough('App\Models\QuizAnswers', 'App\Models\QuizQuestions', 'quiz_id', 'question_id', 'id', 'id');
+        return $this->hasManyThrough('App\Models\QuizAnswer', 'App\Models\QuizQuestion', 'quiz_id', 'question_id', 'id', 'id');
     }
 }

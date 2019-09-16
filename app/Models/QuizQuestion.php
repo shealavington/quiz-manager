@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class QuizQuestions extends Model
+class QuizQuestion extends Model
 {
     /**
      * Get the quiz that owns the question.
@@ -19,6 +19,6 @@ class QuizQuestions extends Model
      */
     public function answers()
     {
-        return $this->hasMany('\App\Models\QuizAnswers', 'question_id', 'id');
+        return $this->hasMany('\App\Models\QuizAnswer', 'question_id', 'id');
     }
 }
