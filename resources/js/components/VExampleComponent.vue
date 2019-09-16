@@ -3,10 +3,15 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header">Example Component</div>
-
+                    <div class="card-header">
+                        <slot name="title">
+                            Example Component
+                        </slot>
+                    </div>
                     <div class="card-body">
-                        I'm an example component.
+                        <slot>
+                            I'm an example component.
+                        </slot>
                     </div>
                 </div>
             </div>
@@ -17,7 +22,7 @@
 <script>
     export default {
         mounted() {
-            console.log('Component mounted.')
+
         }
     }
 </script>
