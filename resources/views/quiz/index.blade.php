@@ -9,7 +9,7 @@
                     <template v-slot:title>{{ $quiz->name }}</template>
                     {{ $quiz->description }}
                     <br>
-                    <a href="/quizzes/{{ $quiz->uuid }}">Play Quiz</a>
+                    <a href="/quizzes/{{ $quiz->uuid }}">View Quiz</a>
                 </v-example-component>
             </div>
         @endforeach
