@@ -3,63 +3,40 @@
 @section('content')
 <v-page inline-template>
     <v-container>
-
-        <div class="text-center">
-            <h1>{{ $quiz->name }}</h1>
-            <p>{{ $quiz->description }}</p>
+        <div class="jumbotron">
+            <h1 class="display-4" contenteditable="true">{{ $quiz->name }}</h1>
+            <p class="lead">{{ $quiz->description }}</p>
             @if(Auth::user()->role === 1)
-            <form action="{{ route('quizzes.show', [$quiz->uuid]) }}" method="POST">
-                @csrf
-                @method('DELETE')
-                <button class="btn btn-primary" type="submit">Delete Quiz</button>
-            </form>
+            <div class="d-print-none">
+                <hr class="my-4">
+                <p>You're an unrestricted user, you can perform the following actions for this quiz:</p>
+                <form action="{{ route('quizzes.show', [$quiz->uuid]) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button class="btn btn-danger btn-lg" type="submit" role="button">Delete Quiz</button>
+                    <a class="btn btn-primary btn-lg" href="{{ route('quizzes.edit', [$quiz->uuid]) }}">Edit Quiz</a>
+                </form>
+            </div>
             @endif
         </div>
-
-        <hr style="margin: 50px 0;">
-
-        <div class="quiz-region">
-
-            <template v-if="!canContinue">
-                <div class="row text-center">
-                    <div class="col-md-12">
-                        <h2 class="question">Quiz Completed!</h2>
-                    </div>
-                    <div class="col-md-12">
-                        <button class="btn btn-primary" @click="submitQuiz"> Finished </button>
-                    </div>
-                </div>
-            </template>
-
-            <template v-else-if="!currentQuestionIndex">
-                <div class="row text-center">
-                    <div class="col-md-12">
-                        <h2 class="question">Begin Quizzing!</h2>
-                    </div>
-                    <div class="col-md-12">
-                        <button class="btn btn-primary" @click="currentQuestionIndex = Object.keys(questions)[0]"> Start </button>
-                    </div>
-                </div>
-            </template>
-
-            <template v-else>
-                <div class="row text-center">
-                    <div class="col-md-12">
-                        <h2 class="question">@{{ currentQuestion.question }}</h2>
-                    </div>
-                    <div class="row col-md-12">
-                        <div class="col-md-6" v-for="(answer, i) in currentQuestion.answers" :key="'answer_'+i">
-                            <div class="card" :class="{ 'selected': currentAnswerIndex === i }" @click="currentAnswerIndex = i">
-                                @{{ answer.answer }}
-                            </div>
+        <div id="quiz-region">
+            <div class="row text-center">
+                <div class="col-md-12 text-left">
+                    @foreach ($questions as $question)
+                      <div class="card my-5">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ $question['question'] }}</h5>
+                            <p class="card-text">There are {{ count($question['answers']) }} answers to choose from:</p>
                         </div>
-                    </div>
-                    <div class="col-md-12">
-                        <button class="btn btn-primary" v-if="currentAnswerIndex !== null" @click="nextQuestion">Next</button>
-                    </div>
+                        <ul class="list-group list-group-flush">
+                            @foreach ($question['answers'] as $answer)
+                                <li class="list-group-item">{{ $answer['answer'] }}</li>
+                            @endforeach
+                        </ul>
+                      </div>
+                    @endforeach
                 </div>
-            </template>
-
+            </div>
         </div>
     </v-container>
 </v-page>
@@ -68,38 +45,7 @@
 @section('javascript')
     <script type="text/javascript">
         Vue.component('v-page', {
-            data() {
-                return {
-                    questions: {!! json_encode($questions) !!},
-                    currentQuestionIndex: null,
-                    currentAnswerIndex: null,
-                    answersGiven: {}
-                }
-            },
-            computed: {
-                currentQuestion() {
-                    return this.questions[this.currentQuestionIndex];
-                },
-                selectedAnswer() {
-                    return this.currentAnswerIndex !== null ? this.questions[this.currentQuestionIndex]['answers'][this.currentAnswerIndex] : null;
-                },
-                questionCount() {
-                    return Object.keys(this.questions).length
-                },
-                canContinue() {
-                    return this.currentQuestionIndex >= this.questionCount ? false : true
-                }
-            },
-            methods: {
-                nextQuestion() {
-                    this.answersGiven[this.currentQuestion.id] = this.selectedAnswer.id
-                    this.currentQuestionIndex++
-                    this.currentAnswerIndex = null
-                },
-                submitQuiz() {
-                    console.log("Finished", this.answersGiven)
-                }
-            }
+
         });
     </script>
 @endsection
