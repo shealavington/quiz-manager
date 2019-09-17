@@ -4,7 +4,7 @@
 <v-page inline-template>
     <section class="container">
         <div class="jumbotron mb-2">
-            <h1 class="display-4" contenteditable="true">{{ $quiz->name }}</h1>
+            <h1 class="display-4">{{ $quiz->name }}</h1>
             <p class="lead mb-0">{{ $quiz->description }}</p>
             @if(Auth::user()->canDeleteQuiz() || Auth::user()->canEditQuiz())
             <div class="d-print-none">
