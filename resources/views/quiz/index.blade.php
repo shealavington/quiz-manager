@@ -7,7 +7,7 @@
             <h1 class="display-4 mr-auto">Quiz List</h1>
             @if(Auth::user()->canCreateQuiz())
                 <div class="d-print-none">
-                    <a class="btn btn-primary btn-lg" href="{{ route('quizzes.create') }}">Create Quiz</a>
+                    <a class="btn btn-primary btn-lg" href="{{ route('quizzes.create') }}">Create A Quiz</a>
                 </div>
             @endif
         </div>
@@ -29,7 +29,6 @@
             There don't seem to be any quizzes available right now, please check again later.
         </p>
         @endif
-
     </div>
 </div>
 @endsection
