@@ -52,7 +52,7 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                    @if(Auth::user()->role_id === 1)
+                                    @if(Auth::user()->canCreateQuiz())
                                         <a class="dropdown-item" href="{{ route("quizzes.create") }}" /> Create A Quiz </a>
                                     @endif
                                     <a class="dropdown-item" href="{{ route("quizzes.index") }}" /> View Quizzes </a>
