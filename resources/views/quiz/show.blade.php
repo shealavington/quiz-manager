@@ -2,20 +2,24 @@
 
 @section('content')
 <v-page inline-template>
-    <v-container>
-        <div class="jumbotron">
+    <section class="container">
+        <div class="jumbotron mb-2">
             <h1 class="display-4" contenteditable="true">{{ $quiz->name }}</h1>
-            <p class="lead">{{ $quiz->description }}</p>
-            @if(Auth::user()->role === 1)
+            <p class="lead mb-0">{{ $quiz->description }}</p>
+            @if(Auth::user()->canDeleteQuiz() || Auth::user()->canEditQuiz())
             <div class="d-print-none">
                 <hr class="my-4">
-                <p>You're an unrestricted user, you can perform the following actions for this quiz:</p>
-                <form action="{{ route('quizzes.show', [$quiz->uuid]) }}" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <button class="btn btn-danger btn-lg" type="submit" role="button">Delete Quiz</button>
+                <p>You can perform the following actions for this quiz:</p>
+                @if(Auth::user()->canDeleteQuiz())
+                    <form action="{{ route('quizzes.show', [$quiz->uuid]) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <button class="btn btn-danger btn-lg" type="submit" role="button">Delete Quiz</button>
+                    </form>
+                @endif
+                @if(Auth::user()->canEditQuiz())
                     <a class="btn btn-primary btn-lg" href="{{ route('quizzes.edit', [$quiz->uuid]) }}">Edit Quiz</a>
-                </form>
+                @endif
             </div>
             @endif
         </div>
@@ -23,22 +27,26 @@
             <div class="row text-center">
                 <div class="col-md-12 text-left">
                     @foreach ($questions as $question)
-                      <div class="card my-5">
+                      <div class="card my-3">
                         <div class="card-body">
-                            <h5 class="card-title">{{ $question['question'] }}</h5>
-                            <p class="card-text">There are {{ count($question['answers']) }} answers to choose from:</p>
+                            <h5 class="card-title mb-0">{{ $question['question'] }}</h5>
+                            @if(count($question['answers']) > 0)
+                                <p class="card-text text-muted">There are {{ count($question['answers']) }} answers to choose from:</p>
+                            @endif
                         </div>
-                        <ul class="list-group list-group-flush">
+                        <ol class="list-group list-group-flush">
+                            <?php $x = 'A'; ?>
                             @foreach ($question['answers'] as $answer)
-                                <li class="list-group-item">{{ $answer['answer'] }}</li>
+                                <li class="list-group-item">{{$x}}. {{ $answer['answer'] }}</li>
+                                <?php $x++; ?>
                             @endforeach
-                        </ul>
+                        </ol>
                       </div>
                     @endforeach
                 </div>
             </div>
         </div>
-    </v-container>
+    </section>
 </v-page>
 @endsection
 

@@ -11,6 +11,6 @@ class QuizAnswer extends Model
      */
     public function answer()
     {
-        return $this->belongsTo('\App\Models\QuizQuestion', 'question_id', 'id');
+        return $this->belongsTo('App\Models\QuizQuestion', 'question_id', 'id');
     }
 }

@@ -27,8 +27,7 @@ class QuizController extends Controller
      */
     public function index()
     {
-        $quizzes = Quiz::with('creator')
-                    ->get();
+        $quizzes = Quiz::with('creator')->get();
 
         return view('quiz.index', ['quizzes' => $quizzes]);
     }
@@ -40,6 +39,10 @@ class QuizController extends Controller
      */
     public function create()
     {
+        if(!Auth::user()->canCreateQuiz())
+        {
+            abort(403, 'Unauthorized action.');
+        }
         return view('quiz.create');
     }
 
@@ -51,7 +54,10 @@ class QuizController extends Controller
      */
     public function store(Request $request)
     {
-        // dd(json_decode($request->quiz, true));
+        if(!Auth::user()->canCreateQuiz())
+        {
+            abort(403, 'Unauthorized action.');
+        }
 
         $newQuiz = json_decode($request->quiz, true);
 
@@ -112,12 +118,15 @@ class QuizController extends Controller
             ];
         }
 
-        foreach ($quiz->answers as $answer)
+        if(Auth::user()->canReadAnswers())
         {
-            $questions[$answer['question_id']]['answers'][] = [
-                'id' => $answer->id,
-                'answer' => $answer->answer
-            ];
+            foreach ($quiz->answers as $answer)
+            {
+                $questions[$answer['question_id']]['answers'][] = [
+                    'id' => $answer->id,
+                    'answer' => $answer->answer
+                ];
+            }
         }
 
         $questions = array_values ( $questions );
@@ -136,6 +145,10 @@ class QuizController extends Controller
      */
     public function edit($id)
     {
+        if(!Auth::user()->canEditQuiz())
+        {
+            abort(403, 'Unauthorized action.');
+        }
         return view('quiz.edit');
     }
 
@@ -148,7 +161,10 @@ class QuizController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        if(!Auth::user()->canEditQuiz())
+        {
+            abort(403, 'Unauthorized action.');
+        }
     }
 
     /**
@@ -159,6 +175,11 @@ class QuizController extends Controller
      */
     public function destroy($quiz_id)
     {
+        if(!Auth::user()->canDeleteQuiz())
+        {
+            abort(403, 'Unauthorized action.');
+        }
+
         $quiz = Quiz::with('creator')
                     ->with('questions')
                     ->with('answers')
@@ -167,6 +188,6 @@ class QuizController extends Controller
 
         $quiz->delete();
 
-        return redirect()->route('quizzes.index');
+        return redirect()->route('quizzes.index')->with('message','Quiz successfully deleted!');
     }
 }

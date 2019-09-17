@@ -2,7 +2,7 @@
 
 @section('content')
 <v-page inline-template>
-    <v-container>
+    <section class="container">
 
         <!-- This could avoid vue methods completely and use the class methods I think -->
 
@@ -47,7 +47,7 @@
             <pre class="text-left">@{{ quiz }}</pre>
 
         </div>
-    </v-container>
+    </section>
 </v-page>
 @endsection
 

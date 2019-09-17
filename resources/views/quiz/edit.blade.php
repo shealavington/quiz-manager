@@ -2,11 +2,11 @@
 
 @section('content')
 <v-page inline-template>
-    <v-container>
+    <section class="container">
         <div class="text-center">
             <h1>Edit</h1>
         </div>
-    </v-container>
+    </section>
 </v-page>
 @endsection
 

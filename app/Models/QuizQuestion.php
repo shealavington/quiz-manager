@@ -11,7 +11,7 @@ class QuizQuestion extends Model
      */
     public function quiz()
     {
-        return $this->belongsTo('\App\Models\Quiz', 'quiz_id', 'id');
+        return $this->belongsTo('App\Models\Quiz', 'quiz_id', 'id');
     }
 
     /**
@@ -19,6 +19,6 @@ class QuizQuestion extends Model
      */
     public function answers()
     {
-        return $this->hasMany('\App\Models\QuizAnswer', 'question_id', 'id');
+        return $this->hasMany('App\Models\QuizAnswer', 'question_id', 'id');
     }
 }

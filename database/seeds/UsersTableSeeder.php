@@ -16,7 +16,7 @@ class UsersTableSeeder extends Seeder
             'email' => 'shea@example.com',
             'password' => bcrypt('shea123'),
             'email_verified_at' => '2019-09-16 12:28:16',
-            'role' => '1',
+            'role_id' => '1',
         ]);
 
         DB::table('users')->insert([
@@ -24,7 +24,7 @@ class UsersTableSeeder extends Seeder
             'email' => 'ben@example.com',
             'password' => bcrypt('ben123'),
             'email_verified_at' => '2019-09-16 12:28:16',
-            'role' => '2',
+            'role_id' => '2',
         ]);
 
         DB::table('users')->insert([
@@ -32,7 +32,7 @@ class UsersTableSeeder extends Seeder
             'email' => 'john@example.com',
             'password' => bcrypt('john123'),
             'email_verified_at' => '2019-09-16 12:28:16',
-            'role' => '3',
+            'role_id' => '3',
         ]);
     }
 }

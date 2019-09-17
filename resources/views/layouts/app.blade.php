@@ -52,7 +52,7 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                    @if(Auth::user()->role === 1)
+                                    @if(Auth::user()->role_id === 1)
                                         <a class="dropdown-item" href="{{ route("quizzes.create") }}" /> Create A Quiz </a>
                                     @endif
                                     <a class="dropdown-item" href="{{ route("quizzes.index") }}" /> View Quizzes </a>
@@ -73,8 +73,17 @@
                 </div>
             </div>
         </nav>
-
-        <main class="py-4">
+        <main id="content" class="py-4">
+            @if ($message = Session::get('message'))
+                <section id="alert" class="container">
+                    <div class="alert alert-primary" role="alert">
+                        {{ $message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </section>
+            @endif
             @yield('content')
         </main>
     </div>
