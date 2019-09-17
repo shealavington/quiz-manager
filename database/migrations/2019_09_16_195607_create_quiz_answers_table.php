@@ -19,6 +19,7 @@ class CreateQuizAnswersTable extends Migration
             $table->foreign('question_id')->references('id')->on('quiz_questions')->onDelete('cascade');
             $table->string('answer');
             $table->boolean('is_correct')->default(0);
+            $table->integer('sort')->nullable();
             $table->timestamps();
         });
     }
