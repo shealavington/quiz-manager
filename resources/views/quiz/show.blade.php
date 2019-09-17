@@ -24,8 +24,8 @@
             @endif
         </div>
         <div id="quiz-region">
-            <div class="row text-center">
-                <div class="col-md-12 text-left">
+            <div class="row">
+                <div class="col-md-12">
                     @foreach ($questions as $question)
                       <div class="card my-3">
                         <div class="card-body">
