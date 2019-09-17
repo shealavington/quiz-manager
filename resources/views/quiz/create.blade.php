@@ -2,51 +2,77 @@
 
 @section('content')
 <v-page inline-template>
-    <section class="container">
+<section class="container">
+        <div class="jumbotron mb-2">
+            <h1 class="display-4">Quiz Settings</h1>
+            <p class="lead">Edit the settings of the quiz here.</p>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Name:</span>
+                </div>
+                <input type="text" class="form-control" placeholder="Name..." v-model="quiz.name">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Description:</span>
+                </div>
+                <input type="text" class="form-control" placeholder="Description..." v-model="quiz.description">
+            </div>
 
-        <!-- This could avoid vue methods completely and use the class methods I think -->
+            <div class="btn-toolbar justify-content-between mb-3">
+                <div class="btn-group mr-2">
+                    <button type="button" class="btn btn-primary" @click="addQuestion">Add Question</button>
+                </div>
 
-        <div class="text-center">
-            <h1>Create</h1>
-
-            <form method="post" action="/quizzes">
-                @csrf
-                <textarea name="quiz" style="display:none">@{{quiz}}</textarea>
-                <button type="submit">Save Quiz</button>
-            </form>
-
-            <form @submit.prevent="addQuestion">
-                <hr />
-                <h2>Update Quiz</h2>
-                <input type="text" v-model="quiz.name" placeholder="Quiz Name..." />
-                <input type="text" v-model="quiz.description" placeholder="Quiz Description..." />
-                <button type="submit">Submit</button>
-            </form>
-
-            <form @submit.prevent="addQuestion">
-                <hr />
-                <h2>Add Question</h2>
-                <input type="text" v-model="forms.question.question" placeholder="Question..." />
-                <button type="submit">Submit</button>
-            </form>
-
-            <form @submit.prevent="addAnswer" v-if="quiz.questions.length > 0">
-                <hr />
-                <h2>Add Answer</h2>
-                <select v-model="forms.answer.questionIndex">
-                    <option v-for="(question, i) in quiz.questions" v-bind:value="i">@{{question.question}}</option>
-                <input type="text" v-model="forms.answer.answer" placeholder="Answer..." />
-                </select>
-                <input type="checkbox" v-model="forms.answer.is_correct">Is this answer correct?<br>
-
-                <button type="submit">Submit</button>
-            </form>
-
-            <hr />
-
-            <pre class="text-left">@{{ quiz }}</pre>
-
+                <div class="btn-group">
+                    <form class="d-inline" method="post" ref="submitQuiz" action="/quizzes">
+                        @csrf
+                        <textarea name="quiz" style="display:none">@{{quiz}}</textarea>
+                        <button type="button" class="btn btn-success" @click="submitQuiz">Save Quiz</button>
+                    </form>
+                </div>
+            </div>
         </div>
+        <div id="quiz-region">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card my-3" v-for="(question, qIndex) in quiz.questions">
+                        <div class="card-header">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Question:</span>
+                                </div>
+                                <input type="text" class="form-control" v-model="question.question">
+                                <div class="input-group-append" id="button-addon3">
+                                    <button class="btn btn-outline-secondary" type="button" @click="removeQuestion(qIndex)">
+                                        Delete Question
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="input-group mb-3" v-for="(answer, aIndex) in question.answers">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">
+                                        <input type="checkbox" aria-label="Checkbox for following text input" v-model="answer.is_correct">
+                                    </div>
+                                </div>
+                                <input type="text" class="form-control" placeholder="Answer Here..." v-model="answer.answer">
+                                <div class="input-group-append" id="button-addon3">
+                                    <button class="btn btn-outline-secondary" type="button" @click="removeAnswer(qIndex,aIndex)">
+                                        Delete Answer
+                                    </button>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-secondary" type="submit" @click="addAnswer(qIndex)">Add New Answer</button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- <pre class="text-left">@{{ quiz }}</pre> --}}
     </section>
 </v-page>
 @endsection
@@ -55,34 +81,51 @@
     <script type="text/javascript">
 
         class Answer {
-            constructor(answer, is_correct) {
+            constructor(answer = '', is_correct = false) {
                 this.answer = answer
                 this.is_correct = is_correct ? true : false
-            }
-            changeAnswer(answer) {
-                this.answer = answer
-                return this
-            }
-            changeCorrectness(is_correct) {
-                this.is_correct = is_correct
-                return this
             }
         }
 
         class Question {
-            constructor(question) {
+            constructor(question = '') {
                 this.question = question
                 this.answers = []
             }
-            updateQuestion(question) {
-                this.question = question
-                return this
+            removeAnswer(index) {
+                this.answers.splice(index, 1)
             }
             addAnswer(answer, is_correct) {
                 this.answers.push(
                     new Answer(answer, is_correct)
                 )
                 return this
+            }
+            isMissingCorrectAnswer() {
+                let hasCorrectAnswer = true
+                this.answers.forEach(answer => {
+                    if(answer.is_correct) { hasCorrectAnswer = false }
+                })
+                return hasCorrectAnswer
+            }
+            hasBlankAnswers() {
+                let isBlank = false
+                this.answers.forEach(answer => {
+                    if(answer.answer == '') { isBlank = true }
+                })
+                return isBlank
+            }
+            hasEnoughAnswers() {
+                return this.answers.length >= 3 && this.answers.length <= 5 ? true : false
+            }
+            hasDuplicateAnswers() {
+                let hasDuplicate = false;
+                let answers = []
+                this.answers.forEach(answer => {
+                    if(answers.includes(answer.answer)) { hasDuplicate = true }
+                    answers.push(answer.answer)
+                })
+                return hasDuplicate
             }
         }
 
@@ -92,19 +135,33 @@
                 this.description = description
                 this.questions = []
             }
-            updateName(name) {
-                this.name = name
-                return this
-            }
-            updateDescription(description) {
-                this.description = description
-                return this
-            }
-            addQuestion(question = '', is_correct) {
+            addQuestion(question) {
                 this.questions.push(
                     new Question(question)
-                );
+                )
                 return this
+            }
+            removeQuestion(index) {
+                this.questions.splice(index, 1)
+            }
+            hasEnoughQuestions() {
+                return this.questions.length > 0 ? true : false
+            }
+            hasBlankQuestions() {
+                let isBlank = false
+                this.questions.forEach(question => {
+                    if(question.question == '') { isBlank = true }
+                })
+                return isBlank
+            }
+            hasDuplicateQuestions() {
+                let hasDuplicate = false;
+                let questions = []
+                this.questions.forEach(question => {
+                    if(questions.includes(question.question)) { hasDuplicate = true }
+                    questions.push(question.question)
+                })
+                return hasDuplicate
             }
         }
 
@@ -112,41 +169,61 @@
             data() {
                 return {
                     quiz: new Quiz(),
-                    forms: {
-                        quiz: {
-                            name: '',
-                            description: ''
-                        },
-                        question: {
-                            question: ''
-                        },
-                        answer: {
-                            answer: '',
-                            questionIndex: null,
-                            is_correct: false
-                        }
-                    }
                 }
             },
             methods: {
                 addQuestion() {
-                    this.quiz.addQuestion(this.forms.question.question)
-                    this.forms.question.question = ''
+                    this.quiz.addQuestion()
                 },
-                addAnswer(questionIndex, answer, is_correct) {
-                    this.quiz.questions[this.forms.answer.questionIndex].addAnswer(this.forms.answer.answer, this.forms.answer.is_correct)
-                    this.forms.answer.answer = this.forms.answer.is_correct = ''
+                removeQuestion(question_index) {
+                    this.quiz.removeQuestion(question_index)
+                },
+                removeAnswer(question_index, answer_index) {
+                    this.quiz.questions[question_index].removeAnswer(answer_index)
+                },
+                addAnswer(questionIndex) {
+                    this.quiz.questions[questionIndex].addAnswer()
                 },
                 submitQuiz() {
-                    axios.post(`/quizzes/create`, this.quiz);
+                    let canSubmit = true
+                    if (!this.quiz.hasEnoughQuestions()) {
+                        console.log('You\'re required to have at least one question.')
+                        canSubmit = false
+                    } else if (this.quiz.hasBlankQuestions()) {
+                        console.log('One or more of the questions are blank.')
+                        canSubmit = false
+                    } else if (this.quiz.hasBlankQuestions()) {
+                        console.log('One or more of the questions are blank.')
+                        canSubmit = false
+                    } else {
+                        this.quiz.questions.forEach(question => {
+                            if (!question.hasEnoughAnswers()) {
+                                console.log('You must have no less or no more than 3-5 answers for each question.')
+                                canSubmit = false
+                            } else if (question.hasBlankAnswers()) {
+                                console.log('One or more of the answers are blank.')
+                                canSubmit = false
+                            } else if (question.hasDuplicateAnswers()) {
+                                console.log('One or more of the answers are a duplicate.')
+                                canSubmit = false
+                            }else if (question.isMissingCorrectAnswer()) {
+                                console.log('There needs to be at least one correct answer for all questions.')
+                                canSubmit = false
+                            }
+                        })
+                    }
+                    if(canSubmit) {
+                        this.$refs['submitQuiz'].submit()
+                        console.log('Submitting')
+                    }
                 }
             },
             mounted() {
 
                 /* This is only for development */
 
-                this.quiz.updateName("About \"the creator\"")
-                this.quiz.updateDescription("Answer questions about the creator of this quiz manager.")
+                this.quiz.name = "About \"the creator\""
+                this.quiz.description = "Answer questions about the creator of this quiz manager."
 
                 this.quiz.addQuestion("What is his name?")
                 this.quiz.questions[0].addAnswer("Kris", false)
@@ -166,6 +243,6 @@
                 this.quiz.questions[2].addAnswer("3 Weeks", false)
                 this.quiz.questions[2].addAnswer("4 Weeks", false)
             }
-        });
+        })
     </script>
 @endsection
