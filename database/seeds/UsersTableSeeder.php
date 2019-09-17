@@ -13,24 +13,24 @@ class UsersTableSeeder extends Seeder
     {
         DB::table('users')->insert([
             'name' => 'Shea',
-            'email' => 'shea@mailtrap.io',
-            'password' => bcrypt('password1'),
+            'email' => 'shea@example.com',
+            'password' => bcrypt('shea123'),
             'email_verified_at' => '2019-09-16 12:28:16',
             'role' => '1',
         ]);
 
         DB::table('users')->insert([
             'name' => 'Ben',
-            'email' => 'ben@mailtrap.io',
-            'password' => bcrypt('password2'),
+            'email' => 'ben@example.com',
+            'password' => bcrypt('ben123'),
             'email_verified_at' => '2019-09-16 12:28:16',
             'role' => '2',
         ]);
 
         DB::table('users')->insert([
             'name' => 'John',
-            'email' => 'john@mailtrap.io',
-            'password' => bcrypt('password3'),
+            'email' => 'john@example.com',
+            'password' => bcrypt('john123'),
             'email_verified_at' => '2019-09-16 12:28:16',
             'role' => '3',
         ]);
