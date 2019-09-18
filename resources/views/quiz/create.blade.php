@@ -52,7 +52,10 @@
                                 </div>
                                 <input type="text" class="form-control" placeholder="Answer Here..." v-model="answer.answer">
                                 <div class="input-group-append" id="button-addon3">
-                                    <button class="btn btn-outline-secondary" type="button" @click="removeAnswer(qIndex,aIndex)">
+                                    <button class="btn btn-secondary" type="button" @click="moveAnswerUp(qIndex,aIndex)">
+                                        Move Up
+                                    </button>
+                                    <button class="btn btn-outline-danger" type="button" @click="removeAnswer(qIndex,aIndex)">
                                         Delete Answer
                                     </button>
                                 </div>
@@ -62,6 +65,9 @@
                                     <button class="btn btn-primary" type="submit" @click="addAnswer(qIndex)">Add Answer</button>
                                 </div>
                                 <div class="btn-group">
+                                    <button class="btn btn-secondary" type="button" @click="moveQuestionUp(qIndex)">
+                                        Move Up
+                                    </button>
                                     <button class="btn btn-danger" type="button" @click="removeQuestion(qIndex)">
                                         Delete Question
                                     </button>
@@ -80,6 +86,18 @@
 @section('javascript')
     <script type="text/javascript">
 
+        function moveArrayItemUp(arr, index) {
+            var itemToMove = arr[index]
+            var replaceId = index-1
+            if(index === 0) {
+                arr.push(arr.shift())
+            } else {
+                arr[index] = arr[replaceId]
+                arr[replaceId] = itemToMove
+            }
+            return arr;
+        };
+
         class Answer {
             constructor(answer = '', is_correct = false) {
                 this.answer = answer
@@ -91,6 +109,10 @@
             constructor(question = '') {
                 this.question = question
                 this.answers = []
+            }
+            moveAnswerUp(index) {
+                console.log('moving')
+                this.answers = moveArrayItemUp(this.answers, index)
             }
             removeAnswer(index) {
                 this.answers.splice(index, 1)
@@ -141,6 +163,9 @@
                 )
                 return this
             }
+            moveQuestionUp(index) {
+                this.questions = moveArrayItemUp(this.questions, index)
+            }
             removeQuestion(index) {
                 this.questions.splice(index, 1)
             }
@@ -180,6 +205,14 @@
                 showAlertError(message) {
                     console.log('Error:', message)
                     this.showAlert(message,'danger')
+                },
+                moveQuestionUp(question_index) {
+                    this.quiz.moveQuestionUp(question_index)
+                    this.$forceUpdate()
+                },
+                moveAnswerUp(question_index,answer_index) {
+                    this.quiz.questions[question_index].moveAnswerUp(answer_index)
+                    this.$forceUpdate()
                 },
                 addQuestion() {
                     this.quiz.addQuestion()
