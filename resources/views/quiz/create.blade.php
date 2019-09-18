@@ -172,6 +172,15 @@
                 }
             },
             methods: {
+                showAlert(message,type = 'primary') {
+                    this.$root.$refs.alert.control.visible = true
+                    this.$root.$refs.alert.control.message = message
+                    this.$root.$refs.alert.control.type = type
+                },
+                showAlertError(message) {
+                    console.log('Error:', message)
+                    this.showAlert(message,'danger')
+                },
                 addQuestion() {
                     this.quiz.addQuestion()
                 },
@@ -187,34 +196,33 @@
                 submitQuiz() {
                     let canSubmit = true
                     if (!this.quiz.hasEnoughQuestions()) {
-                        console.log('You\'re required to have at least one question.')
+                        this.showAlertError('You\'re required to have at least one question.')
                         canSubmit = false
                     } else if (this.quiz.hasBlankQuestions()) {
-                        console.log('One or more of the questions are blank.')
+                        this.showAlertError('One or more of the questions are blank.')
                         canSubmit = false
                     } else if (this.quiz.hasBlankQuestions()) {
-                        console.log('One or more of the questions are blank.')
+                        this.showAlertError('One or more of the questions are blank.')
                         canSubmit = false
                     } else {
                         this.quiz.questions.forEach(question => {
                             if (!question.hasEnoughAnswers()) {
-                                console.log('You must have no less or no more than 3-5 answers for each question.')
+                                this.showAlertError('You must have no less or no more than 3-5 answers for each question.')
                                 canSubmit = false
                             } else if (question.hasBlankAnswers()) {
-                                console.log('One or more of the answers are blank.')
+                                this.showAlertError('One or more of the answers are blank.')
                                 canSubmit = false
                             } else if (question.hasDuplicateAnswers()) {
-                                console.log('One or more of the answers are a duplicate.')
+                                this.showAlertError('One or more of the answers are a duplicate.')
                                 canSubmit = false
                             }else if (question.isMissingCorrectAnswer()) {
-                                console.log('There needs to be at least one correct answer for all questions.')
+                                this.showAlertError('There needs to be at least one correct answer for all questions.')
                                 canSubmit = false
                             }
                         })
                     }
                     if(canSubmit) {
                         this.$refs['submitQuiz'].submit()
-                        console.log('Submitting')
                     }
                 }
             },

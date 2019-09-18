@@ -188,6 +188,6 @@ class QuizController extends Controller
 
         $quiz->delete();
 
-        return redirect()->route('quizzes.index')->with('message','Quiz successfully deleted!');
+        return redirect()->route('quizzes.index')->with('alert-message','Quiz successfully deleted!')->with('alert-type','success');
     }
 }

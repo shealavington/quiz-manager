@@ -74,16 +74,11 @@
             </div>
         </nav>
         <main id="content" class="py-4">
-            @if ($message = Session::get('message'))
-                <section id="alert" class="container">
-                    <div class="alert alert-primary" role="alert">
-                        {{ $message }}
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                </section>
-            @endif
+            <section id="alert" class="container">
+                <?php $alertMessage = Session::get('alert-message'); ?>
+                <?php $alertShowing = $alertMessage ? true : false; ?>
+                <v-alert ref="alert" :visible="{{json_encode($alertShowing)}}" data="{{$alertMessage}}" type="{{Session::get('alert-type')}}">{{ $alertMessage }}</v-alert>
+            </section>
             @yield('content')
         </main>
     </div>
