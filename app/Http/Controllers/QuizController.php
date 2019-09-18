@@ -101,39 +101,17 @@ class QuizController extends Controller
      */
     public function show($quiz_id)
     {
-        $quiz = Quiz::with('creator')
-                    ->with('questions')
-                    ->with('answers')
-                    ->where('uuid', '=', $quiz_id)
-                    ->first();
-
-        $questions = [];
-
-        foreach ($quiz->questions as $question)
-        {
-            $questions[$question['id']] = [
-                'id' => $question->id,
-                'question' => $question->question,
-                'answers' => []
-            ];
-        }
+        $quiz = Quiz::with('creator')->with('questions');
 
         if(Auth::user()->canReadAnswers())
         {
-            foreach ($quiz->answers as $answer)
-            {
-                $questions[$answer['question_id']]['answers'][] = [
-                    'id' => $answer->id,
-                    'answer' => $answer->answer
-                ];
-            }
+            $quiz->with('answers');
         }
 
-        $questions = array_values ( $questions );
+        $quiz->where('uuid', '=', $quiz_id);
 
         return view('quiz.show', [
-            'quiz' => $quiz,
-            'questions' => $questions
+            'quiz' => $quiz->first()
         ]);
     }
 

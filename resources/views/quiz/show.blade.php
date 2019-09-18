@@ -23,10 +23,11 @@
             </div>
             @endif
         </div>
+
         <div id="quiz-region">
             <div class="row">
                 <div class="col-md-12">
-                    @foreach ($questions as $question)
+                    @foreach ($quiz->questions as $question)
                       <div class="card my-3">
                         <div class="card-body">
                             <h5 class="card-title mb-0">{{ $question['question'] }}</h5>
