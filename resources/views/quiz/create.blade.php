@@ -47,7 +47,7 @@
                             <div class="input-group mb-3" v-for="(answer, aIndex) in question.answers">
                                 <div class="input-group-prepend">
                                     <div class="input-group-text">
-                                        <input type="checkbox" aria-label="Checkbox for following text input" v-model="answer.is_correct">
+                                        <input type="checkbox" aria-label="Checkbox for following text input" v-model="answer.isCorrect">
                                     </div>
                                 </div>
                                 <input type="text" class="form-control" placeholder="Answer Here..." v-model="answer.answer">
@@ -99,9 +99,9 @@
         };
 
         class Answer {
-            constructor(answer = '', is_correct = false) {
+            constructor(answer = '', isCorrect = false) {
                 this.answer = answer
-                this.is_correct = is_correct ? true : false
+                this.isCorrect = isCorrect ? true : false
             }
         }
 
@@ -117,16 +117,16 @@
             removeAnswer(index) {
                 this.answers.splice(index, 1)
             }
-            addAnswer(answer, is_correct) {
+            addAnswer(answer, isCorrect) {
                 this.answers.push(
-                    new Answer(answer, is_correct)
+                    new Answer(answer, isCorrect)
                 )
                 return this
             }
             isMissingCorrectAnswer() {
                 let hasCorrectAnswer = true
                 this.answers.forEach(answer => {
-                    if(answer.is_correct) { hasCorrectAnswer = false }
+                    if(answer.isCorrect) { hasCorrectAnswer = false }
                 })
                 return hasCorrectAnswer
             }
@@ -206,22 +206,22 @@
                     console.log('Error:', message)
                     this.showAlert(message,'danger')
                 },
-                moveQuestionUp(question_index) {
-                    this.quiz.moveQuestionUp(question_index)
+                moveQuestionUp(qIndex) {
+                    this.quiz.moveQuestionUp(qIndex)
                     this.$forceUpdate()
                 },
-                moveAnswerUp(question_index,answer_index) {
-                    this.quiz.questions[question_index].moveAnswerUp(answer_index)
+                moveAnswerUp(qIndex,aIndex) {
+                    this.quiz.questions[qIndex].moveAnswerUp(aIndex)
                     this.$forceUpdate()
                 },
                 addQuestion() {
                     this.quiz.addQuestion()
                 },
-                removeQuestion(question_index) {
-                    this.quiz.removeQuestion(question_index)
+                removeQuestion(qIndex) {
+                    this.quiz.removeQuestion(qIndex)
                 },
-                removeAnswer(question_index, answer_index) {
-                    this.quiz.questions[question_index].removeAnswer(answer_index)
+                removeAnswer(qIndex, aIndex) {
+                    this.quiz.questions[qIndex].removeAnswer(aIndex)
                 },
                 addAnswer(questionIndex) {
                     this.quiz.questions[questionIndex].addAnswer()
