@@ -18,12 +18,10 @@
                 </div>
                 <input type="text" class="form-control" placeholder="Description..." v-model="quiz.description">
             </div>
-
-            <div class="btn-toolbar justify-content-between mb-3">
+            <div class="btn-toolbar justify-content-between">
                 <div class="btn-group mr-2">
                     <button type="button" class="btn btn-primary" @click="addQuestion">Add Question</button>
                 </div>
-
                 <div class="btn-group">
                     <form class="d-inline" method="post" ref="submitQuiz" action="/quizzes">
                         @csrf
@@ -43,11 +41,6 @@
                                     <span class="input-group-text">Question:</span>
                                 </div>
                                 <input type="text" class="form-control" v-model="question.question">
-                                <div class="input-group-append" id="button-addon3">
-                                    <button class="btn btn-outline-secondary" type="button" @click="removeQuestion(qIndex)">
-                                        Delete Question
-                                    </button>
-                                </div>
                             </div>
                         </div>
                         <div class="card-body">
@@ -64,9 +57,16 @@
                                     </button>
                                 </div>
                             </div>
-
-                            <button class="btn btn-secondary" type="submit" @click="addAnswer(qIndex)">Add New Answer</button>
-
+                            <div class="btn-toolbar justify-content-between">
+                                <div class="btn-group mr-2">
+                                    <button class="btn btn-primary" type="submit" @click="addAnswer(qIndex)">Add Answer</button>
+                                </div>
+                                <div class="btn-group">
+                                    <button class="btn btn-danger" type="button" @click="removeQuestion(qIndex)">
+                                        Delete Question
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
