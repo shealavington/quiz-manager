@@ -14,14 +14,17 @@ class QuizQuestionsTableSeeder extends Seeder
         DB::table('quiz_questions')->insert([
             'question' => 'What\'s the biggest search engine?',
             'quiz_id' => 1,
-        ]);
-        DB::table('quiz_questions')->insert([
-            'question' => 'Which company re-branded Santa Claus?',
-            'quiz_id' => 1,
+            'sort' => 2,
         ]);
         DB::table('quiz_questions')->insert([
             'question' => 'What\'s the legal drinking age in the UK?',
             'quiz_id' => 1,
+            'sort' => 3,
+        ]);
+        DB::table('quiz_questions')->insert([
+            'question' => 'Which company re-branded Santa Claus?',
+            'quiz_id' => 1,
+            'sort' => 1,
         ]);
     }
 }

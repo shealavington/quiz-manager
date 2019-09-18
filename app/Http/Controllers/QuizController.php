@@ -70,21 +70,23 @@ class QuizController extends Controller
 
         $quizID = $quiz->id;
 
-        foreach ($newQuiz['questions'] as $newQuestion) {
+        foreach ($newQuiz['questions'] as $index => $newQuestion) {
 
             $question = new QuizQuestion;
             $question->quiz_id = $quizID;
             $question->question = $newQuestion['question'];
+            $question->sort = $index;
             $question->save();
 
             $questionID = $question->id;
 
-            foreach ($newQuestion['answers'] as $newAnswer) {
+            foreach ($newQuestion['answers'] as $index => $newAnswer) {
                 $answer = new QuizAnswer;
                 $answer->question_id = $questionID;
                 $answer->answer = $newAnswer['answer'];
-                $answer->is_correct = $newAnswer['is_correct'];
-                $answer->save();
+                $answer->is_correct = $newAnswer['isCorrect'];
+                $answer->sort = $index;
+            $answer->save();
             }
 
         }
@@ -101,7 +103,9 @@ class QuizController extends Controller
      */
     public function show($quiz_id)
     {
-        $quiz = Quiz::with('creator')->with('questions');
+        $quiz = Quiz::with('creator');
+
+        $quiz->with('questions');
 
         if(Auth::user()->canReadAnswers())
         {
@@ -121,13 +125,28 @@ class QuizController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($quiz_id)
     {
         if(!Auth::user()->canEditQuiz())
         {
             abort(403, 'Unauthorized action.');
         }
-        return view('quiz.edit');
+
+        $quiz = Quiz::with([
+            'creator',
+            'questions' => function($query) {
+                $query->orderBy('sort');
+            },
+            'answers' => function($query) {
+                $query->orderBy('sort');
+            }
+        ])
+        ->where('uuid', '=', $quiz_id)
+        ->first();
+
+        return view('quiz.edit', [
+            'quiz' => $quiz
+        ]);
     }
 
     /**
