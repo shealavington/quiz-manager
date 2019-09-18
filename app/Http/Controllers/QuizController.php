@@ -84,7 +84,7 @@ class QuizController extends Controller
                 $answer = new QuizAnswer;
                 $answer->question_id = $questionID;
                 $answer->answer = $newAnswer['answer'];
-                $answer->is_correct = $newAnswer['isCorrect'];
+                $answer->is_correct = $newAnswer['is_correct'];
                 $answer->sort = $index;
             $answer->save();
             }
@@ -162,6 +162,48 @@ class QuizController extends Controller
         {
             abort(403, 'Unauthorized action.');
         }
+
+        $updatedQuiz = json_decode($request->quiz, true);
+
+        $quiz = Quiz::where('uuid', $updatedQuiz['uuid'])->first();
+        $quiz->name = $updatedQuiz['name'];
+        $quiz->description = $updatedQuiz['description'];
+        $quiz->save();
+
+        $questionIdMap = [];
+
+        foreach ($updatedQuiz['questions'] as $index => $questionData) {
+            if(substr($questionData['id'], 0, 1) === '_') {
+                $question = new QuizQuestion();
+            } else {
+                $question = QuizQuestion::find($questionData['id']);
+            }
+            $question->quiz_id = $quiz->id;
+            $question->question = $questionData['question'];
+            $question->sort = $index;
+            $question->save();
+
+            $questionIdMap[$questionData['id']] = $question->id;
+        }
+
+        foreach ($updatedQuiz['answers'] as $index => $answerData) {
+            if(substr($answerData['id'], 0, 1) === '_') {
+                $answer = new QuizAnswer();
+            } else {
+                $answer = QuizAnswer::find($answerData['id']);
+            }
+            $answer->question_id = $questionIdMap[$answerData['question_id']];
+            $answer->answer = $answerData['answer'];
+            $answer->is_correct = $answerData['is_correct'];
+            $answer->sort = $index;
+            $answer->save();
+        }
+
+
+        // dd($quiz);
+        // dd($request);
+        return redirect()->route('quizzes.show', [$quiz->uuid]);
+
     }
 
     /**

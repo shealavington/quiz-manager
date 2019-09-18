@@ -23,7 +23,7 @@
                     <button type="button" class="btn btn-primary" @click="addQuestion">Add Question</button>
                 </div>
                 <div class="btn-group">
-                    <form class="d-inline" method="post" ref="submitQuiz" action="/quizzes">
+                    <form class="d-inline" ref="submitQuiz" action="{{ route('quizzes.index') }}" method="POST">
                         @csrf
                         <textarea name="quiz" style="display:none">@{{quiz}}</textarea>
                         <button type="button" class="btn btn-success" @click="submitQuiz">Save Quiz</button>
@@ -47,7 +47,7 @@
                             <div class="input-group mb-3" v-for="(answer, aIndex) in question.answers">
                                 <div class="input-group-prepend">
                                     <div class="input-group-text">
-                                        <input type="checkbox" aria-label="Checkbox for following text input" v-model="answer.isCorrect">
+                                        <input type="checkbox" aria-label="Checkbox for following text input" v-model="answer.is_correct">
                                     </div>
                                 </div>
                                 <input type="text" class="form-control" placeholder="Answer Here..." v-model="answer.answer">
@@ -99,10 +99,10 @@
         };
 
         class Answer {
-            constructor(answer = '', isCorrect = false) {
+            constructor(answer = '', is_correct = false) {
                 this.id = null
                 this.answer = answer
-                this.isCorrect = isCorrect ? true : false
+                this.is_correct = is_correct ? true : false
             }
         }
 
@@ -119,16 +119,16 @@
             removeAnswer(index) {
                 this.answers.splice(index, 1)
             }
-            addAnswer(answer, isCorrect) {
+            addAnswer(answer, is_correct) {
                 this.answers.push(
-                    new Answer(answer, isCorrect)
+                    new Answer(answer, is_correct)
                 )
                 return this
             }
             isMissingCorrectAnswer() {
                 let hasCorrectAnswer = true
                 this.answers.forEach(answer => {
-                    if(answer.isCorrect) { hasCorrectAnswer = false }
+                    if(answer.is_correct) { hasCorrectAnswer = false }
                 })
                 return hasCorrectAnswer
             }
