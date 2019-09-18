@@ -100,6 +100,7 @@
 
         class Answer {
             constructor(answer = '', isCorrect = false) {
+                this.id = null
                 this.answer = answer
                 this.isCorrect = isCorrect ? true : false
             }
@@ -107,6 +108,7 @@
 
         class Question {
             constructor(question = '') {
+                this.id = null
                 this.question = question
                 this.answers = []
             }
@@ -153,6 +155,7 @@
 
         class Quiz {
             constructor(name = '', description = '') {
+                this.id = null
                 this.name = name
                 this.description = description
                 this.questions = []
