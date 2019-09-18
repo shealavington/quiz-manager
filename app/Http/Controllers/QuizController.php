@@ -163,45 +163,10 @@ class QuizController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $updatedQuiz = json_decode($request->quiz, true);
+        $quizData = json_decode($request->quiz, true);
 
-        $quiz = Quiz::where('uuid', $updatedQuiz['uuid'])->first();
-        $quiz->name = $updatedQuiz['name'];
-        $quiz->description = $updatedQuiz['description'];
-        $quiz->save();
+        $quiz = $this->addOrUpdateQuiz($quizData);
 
-        $questionIdMap = [];
-
-        foreach ($updatedQuiz['questions'] as $index => $questionData) {
-            if(substr($questionData['id'], 0, 1) === '_') {
-                $question = new QuizQuestion();
-            } else {
-                $question = QuizQuestion::find($questionData['id']);
-            }
-            $question->quiz_id = $quiz->id;
-            $question->question = $questionData['question'];
-            $question->sort = $index;
-            $question->save();
-
-            $questionIdMap[$questionData['id']] = $question->id;
-        }
-
-        foreach ($updatedQuiz['answers'] as $index => $answerData) {
-            if(substr($answerData['id'], 0, 1) === '_') {
-                $answer = new QuizAnswer();
-            } else {
-                $answer = QuizAnswer::find($answerData['id']);
-            }
-            $answer->question_id = $questionIdMap[$answerData['question_id']];
-            $answer->answer = $answerData['answer'];
-            $answer->is_correct = $answerData['is_correct'];
-            $answer->sort = $index;
-            $answer->save();
-        }
-
-
-        // dd($quiz);
-        // dd($request);
         return redirect()->route('quizzes.show', [$quiz->uuid]);
 
     }
@@ -228,5 +193,50 @@ class QuizController extends Controller
         $quiz->delete();
 
         return redirect()->route('quizzes.index')->with('alert-message','Quiz successfully deleted!')->with('alert-type','success');
+    }
+
+    protected function isTemporaryId($data) {
+        return substr($data, 0 , 1) === '_' ? true : false;
+    }
+
+    protected function addOrUpdateQuiz($quizData) {
+        if($this->isTemporaryId($quizData['id'])) {
+            $quiz = new Quiz();
+        } else {
+            $quiz = Quiz::where('uuid', $quizData['uuid'])->first();
+        }
+        $quiz->name = $quizData['name'];
+        $quiz->description = $quizData['description'];
+        $quiz->save();
+
+        $questionIdMap = [];
+
+        foreach ($quizData['questions'] as $index => $questionData) {
+            if($this->isTemporaryId($questionData['id'])) {
+                $question = new QuizQuestion();
+            } else {
+                $question = QuizQuestion::find($questionData['id']);
+            }
+            $question->quiz_id = $quiz->id;
+            $question->question = $questionData['question'];
+            $question->sort = $index;
+            $question->save();
+
+            $questionIdMap[$questionData['id']] = $question->id;
+        }
+
+        foreach ($quizData['answers'] as $index => $answerData) {
+            if($this->isTemporaryId($answerData['id'])) {
+                $answer = new QuizAnswer();
+            } else {
+                $answer = QuizAnswer::find($answerData['id']);
+            }
+            $answer->question_id = $questionIdMap[$answerData['question_id']];
+            $answer->answer = $answerData['answer'];
+            $answer->is_correct = $answerData['is_correct'];
+            $answer->sort = $index;
+            $answer->save();
+        }
+        return $quiz;
     }
 }
