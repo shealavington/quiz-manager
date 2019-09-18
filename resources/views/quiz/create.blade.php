@@ -4,7 +4,7 @@
 <v-page inline-template>
 <section class="container">
         <div class="jumbotron mb-2">
-            <h1 class="display-4">Quiz Settings</h1>
+            <h1 class="display-4">Quiz Settings <small>— Creating</small></h1>
             <p class="lead">Edit the settings of the quiz here.</p>
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
