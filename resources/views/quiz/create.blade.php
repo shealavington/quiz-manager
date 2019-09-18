@@ -20,11 +20,12 @@
             </div>
             <div class="btn-toolbar justify-content-between">
                 <div class="btn-group mr-2">
-                    <button type="button" class="btn btn-primary" @click="addQuestion">Add Question</button>
+                    <button type="button" class="btn btn-primary" @click="quiz.questionAdd({})">Add Question</button>
                 </div>
                 <div class="btn-group">
                     <form class="d-inline" ref="submitQuiz" action="{{ route('quizzes.index') }}" method="POST">
                         @csrf
+                        @method('POST')
                         <textarea name="quiz" style="display:none">@{{quiz}}</textarea>
                         <button type="button" class="btn btn-success" @click="submitQuiz">Save Quiz</button>
                     </form>
@@ -44,7 +45,7 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="input-group mb-3" v-for="(answer, aIndex) in question.answers">
+                            <div class="input-group mb-3" v-for="(answer, aIndex) in quiz.getQuestionAnswers(question.id)">
                                 <div class="input-group-prepend">
                                     <div class="input-group-text">
                                         <input type="checkbox" aria-label="Checkbox for following text input" v-model="answer.is_correct">
@@ -52,23 +53,23 @@
                                 </div>
                                 <input type="text" class="form-control" placeholder="Answer Here..." v-model="answer.answer">
                                 <div class="input-group-append" id="button-addon3">
-                                    <button class="btn btn-secondary" type="button" @click="moveAnswerUp(qIndex,aIndex)">
+                                    {{-- <button class="btn btn-secondary" type="button" @click="moveAnswerUp(qIndex,aIndex)">
                                         Move Up
-                                    </button>
-                                    <button class="btn btn-outline-danger" type="button" @click="removeAnswer(qIndex,aIndex)">
-                                        Delete Answer
+                                    </button> --}}
+                                    <button class="btn btn-outline-secondary" type="button" @click="quiz.answerRemove(answer.id)">
+                                         &times;
                                     </button>
                                 </div>
                             </div>
                             <div class="btn-toolbar justify-content-between">
                                 <div class="btn-group mr-2">
-                                    <button class="btn btn-primary" type="submit" @click="addAnswer(qIndex)">Add Answer</button>
+                                    <button class="btn btn-primary" type="submit" @click="quiz.answerAdd({question_id:question.id})">+ Add Answer</button>
                                 </div>
                                 <div class="btn-group">
-                                    <button class="btn btn-secondary" type="button" @click="moveQuestionUp(qIndex)">
+                                    {{-- <button class="btn btn-secondary" type="button" @click="moveQuestionUp(qIndex)">
                                         Move Up
-                                    </button>
-                                    <button class="btn btn-danger" type="button" @click="removeQuestion(qIndex)">
+                                    </button> --}}
+                                    <button class="btn btn-danger" type="button" @click="quiz.questionRemove(qIndex)">
                                         Delete Question
                                     </button>
                                 </div>
@@ -86,92 +87,36 @@
 @section('javascript')
     <script type="text/javascript">
 
-        function moveArrayItemUp(arr, index) {
-            var itemToMove = arr[index]
-            var replaceId = index-1
-            if(index === 0) {
-                arr.push(arr.shift())
-            } else {
-                arr[index] = arr[replaceId]
-                arr[replaceId] = itemToMove
-            }
-            return arr;
-        };
+        function uuidv4() {
+            return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+            );
+        }
+
+        function temporaryId() {
+            return '_' + uuidv4();
+        }
 
         class Answer {
-            constructor(answer = '', is_correct = false) {
-                this.id = null
-                this.answer = answer
-                this.is_correct = is_correct ? true : false
+            constructor(answer = {}) {
+                this.id = answer.id ? answer.id : temporaryId()
+                this.answer = answer.answer ? answer.answer : ''
+                this.is_correct = answer.is_correct ? answer.is_correct : false
+                this.sort = answer.sort ? answer.sort : 0
+                this.question_id = answer.question_id ? answer.question_id : null
             }
         }
 
         class Question {
-            constructor(question = '') {
-                this.id = null
-                this.question = question
-                this.answers = []
-            }
-            moveAnswerUp(index) {
-                console.log('moving')
-                this.answers = moveArrayItemUp(this.answers, index)
-            }
-            removeAnswer(index) {
-                this.answers.splice(index, 1)
-            }
-            addAnswer(answer, is_correct) {
-                this.answers.push(
-                    new Answer(answer, is_correct)
-                )
-                return this
-            }
-            isMissingCorrectAnswer() {
-                let hasCorrectAnswer = true
-                this.answers.forEach(answer => {
-                    if(answer.is_correct) { hasCorrectAnswer = false }
-                })
-                return hasCorrectAnswer
-            }
-            hasBlankAnswers() {
-                let isBlank = false
-                this.answers.forEach(answer => {
-                    if(answer.answer == '') { isBlank = true }
-                })
-                return isBlank
-            }
-            hasEnoughAnswers() {
-                return this.answers.length >= 3 && this.answers.length <= 5 ? true : false
-            }
-            hasDuplicateAnswers() {
-                let hasDuplicate = false;
-                let answers = []
-                this.answers.forEach(answer => {
-                    if(answers.includes(answer.answer)) { hasDuplicate = true }
-                    answers.push(answer.answer)
-                })
-                return hasDuplicate
+            constructor(question = {}) {
+                this.id = question.id ? question.id : temporaryId()
+                this.question = question.question ? question.question : ''
+                this.sort = question.sort ? question.sort : 0
+                this.quiz_id = question.quiz_id ? question.quiz_id : null
             }
         }
 
-        class Quiz {
-            constructor(name = '', description = '') {
-                this.id = null
-                this.name = name
-                this.description = description
-                this.questions = []
-            }
-            addQuestion(question) {
-                this.questions.push(
-                    new Question(question)
-                )
-                return this
-            }
-            moveQuestionUp(index) {
-                this.questions = moveArrayItemUp(this.questions, index)
-            }
-            removeQuestion(index) {
-                this.questions.splice(index, 1)
-            }
+        class Checks {
             hasEnoughQuestions() {
                 return this.questions.length > 0 ? true : false
             }
@@ -191,6 +136,122 @@
                 })
                 return hasDuplicate
             }
+
+            hasEnoughAnswers() {
+                let hasEnough = true
+                this.questions.forEach(question => {
+                    let answers = this.getQuestionAnswers(question.id)
+                    if(answers.length < 3 || answers.length > 5) {
+                        console.log('aa')
+                        hasEnough = false
+                    }
+                })
+                return hasEnough
+            }
+            hasBlankAnswers() {
+                let isBlank = false
+                this.answers.forEach(answer => {
+                    if(answer.answer == '') { isBlank = true }
+                })
+                return isBlank
+            }
+            hasDuplicateAnswers() {
+                let hasDuplicate = false
+                this.questions.forEach(question => {
+                    let answers = this.getQuestionAnswers(question.id)
+                    let answerList = []
+                    answers.forEach(answer => {
+                        if(answerList.includes(answer.answer)) { hasDuplicate = true }
+                        answerList.push(answer.answer)
+                    })
+                })
+                return hasDuplicate
+            }
+            isMissingCorrectAnswers() {
+                let isMissingCorrectAnswer = false
+                this.questions.forEach(question => {
+                    let answers = this.getQuestionAnswers(question.id)
+                    let correctAnswerFound = false
+                    answers.forEach(answer => {
+                        if(answer.is_correct) { correctAnswerFound = true }
+                    })
+                    if(!correctAnswerFound) {
+                        isMissingCorrectAnswer = true
+                    }
+                })
+                return isMissingCorrectAnswer
+            }
+        }
+        class Quiz extends Checks {
+            constructor(quiz = {}) {
+                super();
+                this.id = quiz.id ? quiz.id : temporaryId()
+                this.uuid = quiz.uuid ? quiz.uuid : null
+                this.name = quiz.name ? quiz.name : null
+                this.description = quiz.description ? quiz.description : null
+                this.user_id = quiz.user_id ? quiz.user_id : null
+                this.questions = []
+                this.answers = []
+                if(quiz.questions) {
+                    quiz.questions.forEach(question => {
+                        this.questionAdd(question)
+                    })
+                }
+                if(quiz.answers) {
+                    quiz.answers.forEach(question => {
+                        this.answerAdd(question)
+                    })
+                }
+            }
+            answerAdd(answer) {
+                if(answer.sort === undefined && answer.question_id) {
+                    let answers = this.answers.filter(a => {
+                        return a.question_id === answer.question_id
+                    })
+                    answer.sort = answers.length
+                }
+                this.answers.push(new Answer(answer))
+                return this
+            }
+            questionAdd(question) {
+                this.questions.push(new Question(question))
+                return this
+            }
+            answerRemove(answerId) {
+                this.answers.splice(this.answers.findIndex(function(answer){
+                    return answer.id === answerId;
+                }), 1);
+            }
+            questionRemove(questionId) {
+                if(!confirm('Are you sure? This will remove all the answers too.')) {
+                    return
+                }
+                this.answers = this.getQuestionAnswers(questionId)
+                this.questions.splice(this.questions.findIndex(function(answer){
+                    return answer.id === questionId;
+                }), 1);
+            }
+
+            getQuestionAnswers(questionId) {
+                let answers = this.answers.filter(answer => {
+                    return answer.question_id === questionId
+                })
+                answers.sort((a, b) => {
+                    return a.sort - b.sort;
+                });
+                return answers;
+            }
+
+            moveQuestionUp(index) {
+                this.questions = moveArrayItemUp(this.questions, index)
+            }
+
+            moveAnswerUp(index) {
+                console.log('moving')
+                this.answers = moveArrayItemUp(this.answers, index)
+            }
+
+
         }
 
         Vue.component('v-page', {
@@ -209,26 +270,6 @@
                     console.log('Error:', message)
                     this.showAlert(message,'danger')
                 },
-                moveQuestionUp(qIndex) {
-                    this.quiz.moveQuestionUp(qIndex)
-                    this.$forceUpdate()
-                },
-                moveAnswerUp(qIndex,aIndex) {
-                    this.quiz.questions[qIndex].moveAnswerUp(aIndex)
-                    this.$forceUpdate()
-                },
-                addQuestion() {
-                    this.quiz.addQuestion()
-                },
-                removeQuestion(qIndex) {
-                    this.quiz.removeQuestion(qIndex)
-                },
-                removeAnswer(qIndex, aIndex) {
-                    this.quiz.questions[qIndex].removeAnswer(aIndex)
-                },
-                addAnswer(questionIndex) {
-                    this.quiz.questions[questionIndex].addAnswer()
-                },
                 submitQuiz() {
                     let canSubmit = true
                     if (!this.quiz.hasEnoughQuestions()) {
@@ -237,25 +278,21 @@
                     } else if (this.quiz.hasBlankQuestions()) {
                         this.showAlertError('One or more of the questions are blank.')
                         canSubmit = false
-                    } else if (this.quiz.hasBlankQuestions()) {
-                        this.showAlertError('One or more of the questions are blank.')
+                    } else if (this.quiz.hasDuplicateQuestions()) {
+                        this.showAlertError('One or more of the questions are a duplicate.')
                         canSubmit = false
-                    } else {
-                        this.quiz.questions.forEach(question => {
-                            if (!question.hasEnoughAnswers()) {
-                                this.showAlertError('You must have no less or no more than 3-5 answers for each question.')
-                                canSubmit = false
-                            } else if (question.hasBlankAnswers()) {
-                                this.showAlertError('One or more of the answers are blank.')
-                                canSubmit = false
-                            } else if (question.hasDuplicateAnswers()) {
-                                this.showAlertError('One or more of the answers are a duplicate.')
-                                canSubmit = false
-                            }else if (question.isMissingCorrectAnswer()) {
-                                this.showAlertError('There needs to be at least one correct answer for all questions.')
-                                canSubmit = false
-                            }
-                        })
+                    } else if (!this.quiz.hasEnoughAnswers()) {
+                        this.showAlertError('You must have no less or no more than 3-5 answers for each this.quiz.')
+                        canSubmit = false
+                    } else if (this.quiz.hasBlankAnswers()) {
+                        this.showAlertError('One or more of the answers are blank.')
+                        canSubmit = false
+                    } else if (this.quiz.hasDuplicateAnswers()) {
+                        this.showAlertError('One or more of the answers are a duplicate.')
+                        canSubmit = false
+                    } else if (this.quiz.isMissingCorrectAnswers()) {
+                        this.showAlertError('There needs to be at least one correct answer for all questions.')
+                        canSubmit = false
                     }
                     if(canSubmit) {
                         this.$refs['submitQuiz'].submit()
@@ -266,26 +303,27 @@
 
                 /* This is only for development */
 
-                this.quiz.name = "About \"the creator\""
-                this.quiz.description = "Answer questions about the creator of this quiz manager."
+                // this.quiz.name = "About \"the creator\""
+                // this.quiz.description = "Answer questions about the creator of this quiz manager."
 
-                this.quiz.addQuestion("What is his name?")
-                this.quiz.questions[0].addAnswer("Kris", false)
-                this.quiz.questions[0].addAnswer("Shea", true)
-                this.quiz.questions[0].addAnswer("Danny", false)
-                this.quiz.questions[0].addAnswer("Ariel", false)
+                // this.quiz.addQuestion("What is his name?")
+                // this.quiz.questions[0].addAnswer("Kris", false)
+                // this.quiz.questions[0].addAnswer("Shea", true)
+                // this.quiz.questions[0].addAnswer("Danny", false)
+                // this.quiz.questions[0].addAnswer("Ariel", false)
 
-                this.quiz.addQuestion("How tall is he?")
-                this.quiz.questions[1].addAnswer("4ft 6in", false)
-                this.quiz.questions[1].addAnswer("5ft 2in", false)
-                this.quiz.questions[1].addAnswer("5ft 9in", true)
-                this.quiz.questions[1].addAnswer("6ft 1in", false)
+                // this.quiz.addQuestion("How tall is he?")
+                // this.quiz.questions[1].addAnswer("4ft 6in", false)
+                // this.quiz.questions[1].addAnswer("5ft 2in", false)
+                // this.quiz.questions[1].addAnswer("5ft 9in", true)
+                // this.quiz.questions[1].addAnswer("6ft 1in", false)
 
-                this.quiz.addQuestion("How long does it take to make this project?")
-                this.quiz.questions[2].addAnswer("1 Week", true)
-                this.quiz.questions[2].addAnswer("2 Weeks", false)
-                this.quiz.questions[2].addAnswer("3 Weeks", false)
-                this.quiz.questions[2].addAnswer("4 Weeks", false)
+                // this.quiz.addQuestion("How long does it take to make this project?")
+                // this.quiz.questions[2].addAnswer("1 Week", true)
+                // this.quiz.questions[2].addAnswer("2 Weeks", false)
+                // this.quiz.questions[2].addAnswer("3 Weeks", false)
+                // this.quiz.questions[2].addAnswer("4 Weeks", false)
+
             }
         })
     </script>

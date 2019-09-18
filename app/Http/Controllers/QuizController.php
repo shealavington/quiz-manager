@@ -59,37 +59,9 @@ class QuizController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $newQuiz = json_decode($request->quiz, true);
+        $quizData = json_decode($request->quiz, true);
 
-        $quiz = new Quiz;
-        $quiz->name = $newQuiz['name'];
-        $quiz->description = $newQuiz['description'];
-        $quiz->uuid = \Illuminate\Support\Str::uuid()->toString();
-        $quiz->user_id = Auth::user()->id;
-        $quiz->save();
-
-        $quizID = $quiz->id;
-
-        foreach ($newQuiz['questions'] as $index => $newQuestion) {
-
-            $question = new QuizQuestion;
-            $question->quiz_id = $quizID;
-            $question->question = $newQuestion['question'];
-            $question->sort = $index;
-            $question->save();
-
-            $questionID = $question->id;
-
-            foreach ($newQuestion['answers'] as $index => $newAnswer) {
-                $answer = new QuizAnswer;
-                $answer->question_id = $questionID;
-                $answer->answer = $newAnswer['answer'];
-                $answer->is_correct = $newAnswer['is_correct'];
-                $answer->sort = $index;
-            $answer->save();
-            }
-
-        }
+        $quiz = $this->addOrUpdateQuiz($quizData);
 
         return redirect()->route('quizzes.show', [$quiz->uuid]);
 
@@ -202,6 +174,8 @@ class QuizController extends Controller
     protected function addOrUpdateQuiz($quizData) {
         if($this->isTemporaryId($quizData['id'])) {
             $quiz = new Quiz();
+            $quiz->uuid = \Illuminate\Support\Str::uuid()->toString();
+            $quiz->user_id = Auth::user()->id;
         } else {
             $quiz = Quiz::where('uuid', $quizData['uuid'])->first();
         }

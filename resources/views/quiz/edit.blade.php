@@ -192,10 +192,12 @@
                 this.user_id = quiz ? quiz.user_id : null
                 this.questions = []
                 this.answers = []
-                if(quiz) {
+                if(quiz.questions) {
                     quiz.questions.forEach(question => {
                         this.questionAdd(question)
                     })
+                }
+                if(quiz.answers) {
                     quiz.answers.forEach(question => {
                         this.answerAdd(question)
                     })
