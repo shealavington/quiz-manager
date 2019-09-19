@@ -37,46 +37,50 @@ class QuizAnswersTableSeeder extends Seeder
             'question_id' => 2,
             'answer' => 'Coca Cola',
             'is_correct' => 1,
-            'sort' => 3
+            'sort' => 2
         ]);
         DB::table('quiz_answers')->insert([
             'question_id' => 2,
             'answer' => 'Apple',
             'is_correct' => 0,
-            'sort' => 1
+            'sort' => 0
         ]);
         DB::table('quiz_answers')->insert([
             'question_id' => 2,
             'answer' => 'Argos',
             'is_correct' => 0,
-            'sort' => 2
+            'sort' => 1
         ]);
         DB::table('quiz_answers')->insert([
             'question_id' => 2,
             'answer' => 'John Lewis',
             'is_correct' => 0,
-            'sort' => 4
+            'sort' => 3
         ]);
         //
         DB::table('quiz_answers')->insert([
             'question_id' => 3,
-            'answer' => '13',
-            'is_correct' => 0
+            'answer' => '21',
+            'is_correct' => 0,
+            'sort' => 3
         ]);
         DB::table('quiz_answers')->insert([
             'question_id' => 3,
             'answer' => '16',
-            'is_correct' => 0
+            'is_correct' => 0,
+            'sort' => 1
+        ]);
+        DB::table('quiz_answers')->insert([
+            'question_id' => 3,
+            'answer' => '13',
+            'is_correct' => 0,
+            'sort' => 0
         ]);
         DB::table('quiz_answers')->insert([
             'question_id' => 3,
             'answer' => '18',
-            'is_correct' => 1
-        ]);
-        DB::table('quiz_answers')->insert([
-            'question_id' => 3,
-            'answer' => '21',
-            'is_correct' => 0
+            'is_correct' => 1,
+            'sort' => 2
         ]);
     }
 }
