@@ -574,24 +574,26 @@ var render = function() {
                         attrs: { id: "button-addon3" }
                       },
                       [
-                        _c(
-                          "button",
-                          {
-                            staticClass: "btn btn-primary",
-                            attrs: { type: "button" },
-                            on: {
-                              click: function($event) {
-                                _vm.quiz.questionMoveUp(question.id)
-                                _vm.$forceUpdate()
-                              }
-                            }
-                          },
-                          [
-                            _vm._v(
-                              "\n                                    Move Up\n                                "
+                        _vm.quiz.questions.length > 1
+                          ? _c(
+                              "button",
+                              {
+                                staticClass: "btn btn-primary",
+                                attrs: { type: "button" },
+                                on: {
+                                  click: function($event) {
+                                    _vm.quiz.questionMoveUp(question.id)
+                                    _vm.$forceUpdate()
+                                  }
+                                }
+                              },
+                              [
+                                _vm._v(
+                                  "\n                                    Move Up\n                                "
+                                )
+                              ]
                             )
-                          ]
-                        ),
+                          : _vm._e(),
                         _vm._v(" "),
                         _c(
                           "button",
@@ -1203,6 +1205,10 @@ function temporaryId() {
   return '_' + uuidv4();
 }
 
+function isTemporaryId(id) {
+  return id[0] === '_';
+}
+
 var Answer = function Answer() {
   var answer = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
@@ -1242,6 +1248,8 @@ function () {
     this.user_id = quiz.user_id ? quiz.user_id : null;
     this.questions = [];
     this.answers = [];
+    this.deletedQuestions = [];
+    this.deletedAnswers = [];
 
     if (quiz.questions) {
       quiz.questions.forEach(function (question) {
@@ -1271,9 +1279,15 @@ function () {
   }, {
     key: "answerRemove",
     value: function answerRemove(answerId) {
-      this.answers.splice(this.answers.findIndex(function (answer) {
+      var answerIndex = this.answers.findIndex(function (answer) {
         return answer.id === answerId;
-      }), 1);
+      });
+
+      if (!isTemporaryId(answerId)) {
+        this.deletedAnswers.push(this.answers[answerIndex]);
+      }
+
+      this.answers.splice(answerIndex, 1);
       return this;
     }
   }, {
@@ -1283,10 +1297,18 @@ function () {
         return;
       }
 
-      this.answers = this.getQuestionAnswers(questionId);
-      this.questions.splice(this.questions.findIndex(function (question) {
+      var questionIndex = this.questions.findIndex(function (question) {
         return question.id === questionId;
-      }), 1);
+      });
+
+      if (!isTemporaryId(questionId)) {
+        this.deletedQuestions.push(this.questions[questionIndex]);
+      }
+
+      this.answers = this.answers.filter(function (answer) {
+        return answer.question_id !== questionId;
+      });
+      this.questions.splice(questionIndex, 1);
       return this;
     }
   }, {

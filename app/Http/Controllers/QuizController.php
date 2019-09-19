@@ -82,11 +82,6 @@ class QuizController extends Controller
             }
         ]);
 
-        if(Auth::user()->canReadAnswers())
-        {
-            $quiz->with('answers');
-        }
-
         $quiz->where('uuid', '=', $quiz_id);
 
         return view('quiz.show', [
@@ -157,9 +152,7 @@ class QuizController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $quiz = Quiz::with('creator')
-                    ->with('questions')
-                    ->with('answers')
+        $quiz = Quiz::with(['creator','questions'])
                     ->where('uuid', '=', $quiz_id)
                     ->first();
 
@@ -186,6 +179,18 @@ class QuizController extends Controller
 
         $questionIdMap = [];
 
+        foreach ($quizData['deletedAnswers'] as $index => $answerData) {
+            if($this->isTemporaryId($answerData['id'])) { continue; }
+            $question = QuizAnswer::find($answerData['id']);
+            $question->delete();
+        }
+
+        foreach ($quizData['deletedQuestions'] as $index => $questionData) {
+            if($this->isTemporaryId($questionData['id'])) { continue; }
+            $question = QuizQuestion::find($questionData['id']);
+            $question->delete();
+        }
+
         foreach ($quizData['questions'] as $index => $questionData) {
             if($this->isTemporaryId($questionData['id'])) {
                 $question = new QuizQuestion();
@@ -201,12 +206,15 @@ class QuizController extends Controller
         }
 
         foreach ($quizData['answers'] as $index => $answerData) {
+            if(!$questionId = $questionIdMap[$answerData['question_id']]) {
+                continue;
+            }
             if($this->isTemporaryId($answerData['id'])) {
                 $answer = new QuizAnswer();
             } else {
                 $answer = QuizAnswer::find($answerData['id']);
             }
-            $answer->question_id = $questionIdMap[$answerData['question_id']];
+            $answer->question_id = $questionId;
             $answer->answer = $answerData['answer'];
             $answer->is_correct = $answerData['is_correct'];
             $answer->save();

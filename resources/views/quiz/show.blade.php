@@ -31,10 +31,11 @@
                       <div class="card my-3">
                         <div class="card-body">
                             <h5 class="card-title mb-0">{{ $question['question'] }}</h5>
-                            @if(count($question['answers']) > 0)
+                            @if(count($question['answers']) > 0 && Auth::user()->canReadAnswers())
                                 <p class="card-text text-muted">There are {{ count($question['answers']) }} answers to choose from:</p>
                             @endif
                         </div>
+                        @if(Auth::user()->canReadAnswers())
                         <ol class="list-group list-group-flush">
                             <?php $x = 'A'; ?>
                             @foreach ($question['answers'] as $answer)
@@ -42,6 +43,7 @@
                                 <?php $x++; ?>
                             @endforeach
                         </ol>
+                        @endif
                       </div>
                     @endforeach
                 </div>

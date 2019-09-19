@@ -37,7 +37,7 @@
                                 </div>
                                 <input type="text" class="form-control" v-model="question.question">
                                 <div class="input-group-append" id="button-addon3">
-                                    <button class="btn btn-primary" type="button" @click="quiz.questionMoveUp(question.id);$forceUpdate()">
+                                    <button class="btn btn-primary" type="button" v-if="quiz.questions.length > 1" @click="quiz.questionMoveUp(question.id);$forceUpdate()">
                                         Move Up
                                     </button>
                                     <button class="btn btn-outline-primary" type="button" @click="quiz.questionRemove(question.id)">

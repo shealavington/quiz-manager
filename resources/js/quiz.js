@@ -2,11 +2,14 @@
 function uuidv4() {
     return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
         (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-    );
+    )
 }
 
 function temporaryId() {
-    return '_' + uuidv4();
+    return '_' + uuidv4()
+}
+function isTemporaryId(id) {
+    return id[0] === '_'
 }
 
 class Answer {
@@ -36,6 +39,8 @@ export default class Quiz {
         this.user_id = quiz.user_id ? quiz.user_id : null
         this.questions = []
         this.answers = []
+        this.deletedQuestions = []
+        this.deletedAnswers = []
         if(quiz.questions) {
             quiz.questions.forEach(question => {
                 this.questionAdd(question)
@@ -56,19 +61,25 @@ export default class Quiz {
         return this
     }
     answerRemove(answerId) {
-        this.answers.splice(this.answers.findIndex(function(answer){
-            return answer.id === answerId;
-        }), 1);
+        let answerIndex = this.answers.findIndex(answer => {return answer.id === answerId})
+        if(!isTemporaryId(answerId)) {
+            this.deletedAnswers.push(this.answers[answerIndex])
+        }
+        this.answers.splice(answerIndex, 1)
         return this
     }
     questionRemove(questionId) {
         if(!confirm('Are you sure? This will remove all the answers too.')) {
             return
         }
-        this.answers = this.getQuestionAnswers(questionId)
-        this.questions.splice(this.questions.findIndex(function(question){
-            return question.id === questionId;
-        }), 1);
+        let questionIndex = this.questions.findIndex(question => {return question.id === questionId})
+        if(!isTemporaryId(questionId)) {
+            this.deletedQuestions.push(this.questions[questionIndex])
+        }
+        this.answers = this.answers.filter(answer => {
+            return answer.question_id !== questionId
+        })
+        this.questions.splice(questionIndex, 1)
         return this
     }
     questionMoveUp(qId) {
@@ -87,7 +98,7 @@ export default class Quiz {
         let answers = this.answers.filter(answer => {
             return answer.question_id === questionId
         })
-        return answers;
+        return answers
     }
     // Checks & Validation
 
@@ -102,7 +113,7 @@ export default class Quiz {
         return isBlank
     }
     hasDuplicateQuestions() {
-        let hasDuplicate = false;
+        let hasDuplicate = false
         let questions = []
         this.questions.forEach(question => {
             if(questions.includes(question.question)) { hasDuplicate = true }
