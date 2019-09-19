@@ -29,7 +29,7 @@
         <div id="quiz-region">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card my-3" v-for="(question, qIndex) in quiz.questions" :key="qIndex+question.question">
+                    <div id="questions" class="card my-3" v-for="(question, qIndex) in quiz.questions" :key="qIndex+question.question">
                         <div class="card-header">
                             <div class="input-group">
                                 <div class="input-group-prepend">
@@ -47,7 +47,7 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="input-group mb-3" v-for="(answer, aIndex) in quiz.getQuestionAnswers(question.id)" :key="aIndex">
+                            <div id="answers" class="input-group mb-3" v-for="(answer, aIndex) in quiz.getQuestionAnswers(question.id)" :key="aIndex">
                                 <div class="input-group-prepend">
                                     <div class="input-group-text">
                                         <input type="checkbox" aria-label="Checkbox for following text input" v-model="answer.is_correct">

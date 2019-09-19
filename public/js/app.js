@@ -539,7 +539,11 @@ var render = function() {
           _vm._l(_vm.quiz.questions, function(question, qIndex) {
             return _c(
               "div",
-              { key: qIndex + question.question, staticClass: "card my-3" },
+              {
+                key: qIndex + question.question,
+                staticClass: "card my-3",
+                attrs: { id: "questions" }
+              },
               [
                 _c("div", { staticClass: "card-header" }, [
                   _c("div", { staticClass: "input-group" }, [
@@ -627,7 +631,11 @@ var render = function() {
                     ) {
                       return _c(
                         "div",
-                        { key: aIndex, staticClass: "input-group mb-3" },
+                        {
+                          key: aIndex,
+                          staticClass: "input-group mb-3",
+                          attrs: { id: "answers" }
+                        },
                         [
                           _c("div", { staticClass: "input-group-prepend" }, [
                             _c("div", { staticClass: "input-group-text" }, [
