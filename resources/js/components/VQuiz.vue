@@ -15,14 +15,14 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text">Description:</span>
                 </div>
-                <input type="text" class="form-control" placeholder="Description..." v-model="quiz.description">
+                <input name="description" type="text" class="form-control" placeholder="Description..." v-model="quiz.description">
             </div>
             <div class="btn-toolbar justify-content-between">
                 <div class="btn-group mr-2">
                     <button type="button" class="btn btn-primary" @click="quiz.questionAdd({})">Add Question</button>
                 </div>
                 <div class="btn-group">
-                    <button type="button" class="btn btn-success" @click="submitQuiz">Save Quiz</button>
+                    <button name="save" type="button" class="btn btn-success" @click="submitQuiz">Save Quiz</button>
                 </div>
             </div>
         </div>

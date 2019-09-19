@@ -487,7 +487,11 @@ var render = function() {
             }
           ],
           staticClass: "form-control",
-          attrs: { type: "text", placeholder: "Description..." },
+          attrs: {
+            name: "description",
+            type: "text",
+            placeholder: "Description..."
+          },
           domProps: { value: _vm.quiz.description },
           on: {
             input: function($event) {
@@ -522,7 +526,7 @@ var render = function() {
             "button",
             {
               staticClass: "btn btn-success",
-              attrs: { type: "button" },
+              attrs: { name: "save", type: "button" },
               on: { click: _vm.submitQuiz }
             },
             [_vm._v("Save Quiz")]
