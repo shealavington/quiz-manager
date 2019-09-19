@@ -14,7 +14,6 @@ class Answer {
         this.id = answer.id ? answer.id : temporaryId()
         this.answer = answer.answer ? answer.answer : ''
         this.is_correct = answer.is_correct ? answer.is_correct : false
-        this.sort = answer.sort ? answer.sort : 0
         this.question_id = answer.question_id ? answer.question_id : null
     }
 }
@@ -32,7 +31,7 @@ export default class Quiz {
     constructor(quiz = {}) {
         this.id = quiz.id ? quiz.id : temporaryId()
         this.uuid = quiz.uuid ? quiz.uuid : null
-        this.name = quiz.name ? quiz.name : null
+        this.name = quiz.name ? quiz.name : ''
         this.description = quiz.description ? quiz.description : null
         this.user_id = quiz.user_id ? quiz.user_id : null
         this.questions = []
@@ -49,12 +48,6 @@ export default class Quiz {
         }
     }
     answerAdd(answer) {
-        if(answer.sort === undefined && answer.question_id) {
-            let answers = this.answers.filter(a => {
-                return a.question_id === answer.question_id
-            })
-            answer.sort = answers.length
-        }
         this.answers.push(new Answer(answer))
         return this
     }
@@ -66,37 +59,36 @@ export default class Quiz {
         this.answers.splice(this.answers.findIndex(function(answer){
             return answer.id === answerId;
         }), 1);
+        return this
     }
     questionRemove(questionId) {
         if(!confirm('Are you sure? This will remove all the answers too.')) {
             return
         }
         this.answers = this.getQuestionAnswers(questionId)
-        this.questions.splice(this.questions.findIndex(function(answer){
-            return answer.id === questionId;
+        this.questions.splice(this.questions.findIndex(function(question){
+            return question.id === questionId;
         }), 1);
+        return this
     }
-
+    questionMoveUp(qId) {
+        let questionIndex = this.questions.findIndex(q => q.id === qId)
+        console.log(questionIndex)
+        if(questionIndex === 0) {
+            this.questions.push(this.questions.shift())
+        } else {
+            let replacement = this.questions[questionIndex - 1]
+            this.questions[questionIndex - 1] = this.questions[questionIndex]
+            this.questions[questionIndex] = replacement
+        }
+        return this
+    }
     getQuestionAnswers(questionId) {
         let answers = this.answers.filter(answer => {
             return answer.question_id === questionId
         })
-        answers.sort((a, b) => {
-            return a.sort - b.sort;
-        });
         return answers;
     }
-
-    // Currently not working
-
-    // moveQuestionUp(index) {
-    //     this.questions = moveArrayItemUp(this.questions, index)
-    // }
-
-    // moveAnswerUp(index) {
-    //     this.answers = moveArrayItemUp(this.answers, index)
-    // }
-
     // Checks & Validation
 
     hasEnoughQuestions() {
@@ -118,7 +110,6 @@ export default class Quiz {
         })
         return hasDuplicate
     }
-
     hasEnoughAnswers() {
         let hasEnough = true
         this.questions.forEach(question => {
@@ -163,5 +154,7 @@ export default class Quiz {
         })
         return isMissingCorrectAnswer
     }
-
+    isNameBlank() {
+        return this.name === '' || this.name === null ? true : false
+    }
 }

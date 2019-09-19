@@ -75,9 +75,12 @@ class QuizController extends Controller
      */
     public function show($quiz_id)
     {
-        $quiz = Quiz::with('creator');
-
-        $quiz->with('questions');
+        $quiz = Quiz::with([
+            'creator',
+            'questions' => function($query) {
+                $query->orderBy('sort');
+            }
+        ]);
 
         if(Auth::user()->canReadAnswers())
         {
@@ -109,9 +112,7 @@ class QuizController extends Controller
             'questions' => function($query) {
                 $query->orderBy('sort');
             },
-            'answers' => function($query) {
-                $query->orderBy('sort');
-            }
+            'answers'
         ])
         ->where('uuid', '=', $quiz_id)
         ->first();
@@ -208,7 +209,6 @@ class QuizController extends Controller
             $answer->question_id = $questionIdMap[$answerData['question_id']];
             $answer->answer = $answerData['answer'];
             $answer->is_correct = $answerData['is_correct'];
-            $answer->sort = $index;
             $answer->save();
         }
         return $quiz;

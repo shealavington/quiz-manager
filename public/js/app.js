@@ -254,13 +254,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
@@ -287,7 +280,10 @@ __webpack_require__.r(__webpack_exports__);
     submitQuiz: function submitQuiz() {
       var canSubmit = true;
 
-      if (!this.quiz.hasEnoughQuestions()) {
+      if (this.quiz.isNameBlank()) {
+        this.showAlertError('The name of the quiz can\'t be blank');
+        canSubmit = false;
+      } else if (!this.quiz.hasEnoughQuestions()) {
         this.showAlertError('You\'re required to have at least one question.');
         canSubmit = false;
       } else if (this.quiz.hasBlankQuestions()) {
@@ -541,196 +537,226 @@ var render = function() {
           "div",
           { staticClass: "col-md-12" },
           _vm._l(_vm.quiz.questions, function(question, qIndex) {
-            return _c("div", { staticClass: "card my-3" }, [
-              _c("div", { staticClass: "card-header" }, [
-                _c("div", { staticClass: "input-group" }, [
-                  _vm._m(2, true),
-                  _vm._v(" "),
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: question.question,
-                        expression: "question.question"
-                      }
-                    ],
-                    staticClass: "form-control",
-                    attrs: { type: "text" },
-                    domProps: { value: question.question },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(question, "question", $event.target.value)
-                      }
-                    }
-                  })
-                ])
-              ]),
-              _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "card-body" },
-                [
-                  _vm._l(_vm.quiz.getQuestionAnswers(question.id), function(
-                    answer,
-                    aIndex
-                  ) {
-                    return _c("div", { staticClass: "input-group mb-3" }, [
-                      _c("div", { staticClass: "input-group-prepend" }, [
-                        _c("div", { staticClass: "input-group-text" }, [
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: answer.is_correct,
-                                expression: "answer.is_correct"
-                              }
-                            ],
-                            attrs: {
-                              type: "checkbox",
-                              "aria-label": "Checkbox for following text input"
-                            },
-                            domProps: {
-                              checked: Array.isArray(answer.is_correct)
-                                ? _vm._i(answer.is_correct, null) > -1
-                                : answer.is_correct
-                            },
-                            on: {
-                              change: function($event) {
-                                var $$a = answer.is_correct,
-                                  $$el = $event.target,
-                                  $$c = $$el.checked ? true : false
-                                if (Array.isArray($$a)) {
-                                  var $$v = null,
-                                    $$i = _vm._i($$a, $$v)
-                                  if ($$el.checked) {
-                                    $$i < 0 &&
-                                      _vm.$set(
-                                        answer,
-                                        "is_correct",
-                                        $$a.concat([$$v])
-                                      )
-                                  } else {
-                                    $$i > -1 &&
-                                      _vm.$set(
-                                        answer,
-                                        "is_correct",
-                                        $$a
-                                          .slice(0, $$i)
-                                          .concat($$a.slice($$i + 1))
-                                      )
-                                  }
-                                } else {
-                                  _vm.$set(answer, "is_correct", $$c)
-                                }
-                              }
-                            }
-                          })
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: answer.answer,
-                            expression: "answer.answer"
-                          }
-                        ],
-                        staticClass: "form-control",
-                        attrs: { type: "text", placeholder: "Answer Here..." },
-                        domProps: { value: answer.answer },
-                        on: {
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.$set(answer, "answer", $event.target.value)
-                          }
-                        }
-                      }),
-                      _vm._v(" "),
-                      _c(
-                        "div",
+            return _c(
+              "div",
+              { key: qIndex + question.question, staticClass: "card my-3" },
+              [
+                _c("div", { staticClass: "card-header" }, [
+                  _c("div", { staticClass: "input-group" }, [
+                    _vm._m(2, true),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
                         {
-                          staticClass: "input-group-append",
-                          attrs: { id: "button-addon3" }
-                        },
-                        [
-                          _c(
-                            "button",
-                            {
-                              staticClass: "btn btn-outline-secondary",
-                              attrs: { type: "button" },
-                              on: {
-                                click: function($event) {
-                                  return _vm.quiz.answerRemove(answer.id)
-                                }
-                              }
-                            },
-                            [
-                              _vm._v(
-                                "\n                                        ×\n                                "
-                              )
-                            ]
-                          )
-                        ]
-                      )
-                    ])
-                  }),
-                  _vm._v(" "),
-                  _c(
-                    "div",
-                    { staticClass: "btn-toolbar justify-content-between" },
-                    [
-                      _c("div", { staticClass: "btn-group mr-2" }, [
+                          name: "model",
+                          rawName: "v-model",
+                          value: question.question,
+                          expression: "question.question"
+                        }
+                      ],
+                      staticClass: "form-control",
+                      attrs: { type: "text" },
+                      domProps: { value: question.question },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(question, "question", $event.target.value)
+                        }
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      {
+                        staticClass: "input-group-append",
+                        attrs: { id: "button-addon3" }
+                      },
+                      [
                         _c(
                           "button",
                           {
                             staticClass: "btn btn-primary",
-                            attrs: { type: "submit" },
-                            on: {
-                              click: function($event) {
-                                return _vm.quiz.answerAdd({
-                                  question_id: question.id
-                                })
-                              }
-                            }
-                          },
-                          [_vm._v("+ Add Answer")]
-                        )
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "btn-group" }, [
-                        _c(
-                          "button",
-                          {
-                            staticClass: "btn btn-danger",
                             attrs: { type: "button" },
                             on: {
                               click: function($event) {
-                                return _vm.quiz.questionRemove(qIndex)
+                                _vm.quiz.questionMoveUp(question.id)
+                                _vm.$forceUpdate()
                               }
                             }
                           },
                           [
                             _vm._v(
-                              "\n                                    Delete Question\n                                "
+                              "\n                                    Move Up\n                                "
+                            )
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-outline-primary",
+                            attrs: { type: "button" },
+                            on: {
+                              click: function($event) {
+                                return _vm.quiz.questionRemove(question.id)
+                              }
+                            }
+                          },
+                          [
+                            _vm._v(
+                              "\n                                    ×\n                                "
                             )
                           ]
                         )
-                      ])
-                    ]
-                  )
-                ],
-                2
-              )
-            ])
+                      ]
+                    )
+                  ])
+                ]),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "card-body" },
+                  [
+                    _vm._l(_vm.quiz.getQuestionAnswers(question.id), function(
+                      answer,
+                      aIndex
+                    ) {
+                      return _c(
+                        "div",
+                        { key: aIndex, staticClass: "input-group mb-3" },
+                        [
+                          _c("div", { staticClass: "input-group-prepend" }, [
+                            _c("div", { staticClass: "input-group-text" }, [
+                              _c("input", {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model",
+                                    value: answer.is_correct,
+                                    expression: "answer.is_correct"
+                                  }
+                                ],
+                                attrs: {
+                                  type: "checkbox",
+                                  "aria-label":
+                                    "Checkbox for following text input"
+                                },
+                                domProps: {
+                                  checked: Array.isArray(answer.is_correct)
+                                    ? _vm._i(answer.is_correct, null) > -1
+                                    : answer.is_correct
+                                },
+                                on: {
+                                  change: function($event) {
+                                    var $$a = answer.is_correct,
+                                      $$el = $event.target,
+                                      $$c = $$el.checked ? true : false
+                                    if (Array.isArray($$a)) {
+                                      var $$v = null,
+                                        $$i = _vm._i($$a, $$v)
+                                      if ($$el.checked) {
+                                        $$i < 0 &&
+                                          _vm.$set(
+                                            answer,
+                                            "is_correct",
+                                            $$a.concat([$$v])
+                                          )
+                                      } else {
+                                        $$i > -1 &&
+                                          _vm.$set(
+                                            answer,
+                                            "is_correct",
+                                            $$a
+                                              .slice(0, $$i)
+                                              .concat($$a.slice($$i + 1))
+                                          )
+                                      }
+                                    } else {
+                                      _vm.$set(answer, "is_correct", $$c)
+                                    }
+                                  }
+                                }
+                              })
+                            ])
+                          ]),
+                          _vm._v(" "),
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: answer.answer,
+                                expression: "answer.answer"
+                              }
+                            ],
+                            staticClass: "form-control",
+                            attrs: {
+                              type: "text",
+                              placeholder: "Answer Here..."
+                            },
+                            domProps: { value: answer.answer },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(answer, "answer", $event.target.value)
+                              }
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            {
+                              staticClass: "input-group-append",
+                              attrs: { id: "button-addon3" }
+                            },
+                            [
+                              _c(
+                                "button",
+                                {
+                                  staticClass: "btn btn-outline-secondary",
+                                  attrs: { type: "button" },
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.quiz.answerRemove(answer.id)
+                                    }
+                                  }
+                                },
+                                [
+                                  _vm._v(
+                                    "\n                                        ×\n                                "
+                                  )
+                                ]
+                              )
+                            ]
+                          )
+                        ]
+                      )
+                    }),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-primary",
+                        attrs: { type: "submit" },
+                        on: {
+                          click: function($event) {
+                            return _vm.quiz.answerAdd({
+                              question_id: question.id
+                            })
+                          }
+                        }
+                      },
+                      [_vm._v("+ Add Answer")]
+                    )
+                  ],
+                  2
+                )
+              ]
+            )
           }),
           0
         )
@@ -948,15 +974,14 @@ var app = new Vue({
 /*!********************************************!*\
   !*** ./resources/js/components/VAlert.vue ***!
   \********************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _VAlert_vue_vue_type_template_id_34a16db1___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./VAlert.vue?vue&type=template&id=34a16db1& */ "./resources/js/components/VAlert.vue?vue&type=template&id=34a16db1&");
 /* harmony import */ var _VAlert_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./VAlert.vue?vue&type=script&lang=js& */ "./resources/js/components/VAlert.vue?vue&type=script&lang=js&");
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _VAlert_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _VAlert_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -986,7 +1011,7 @@ component.options.__file = "resources/js/components/VAlert.vue"
 /*!*********************************************************************!*\
   !*** ./resources/js/components/VAlert.vue?vue&type=script&lang=js& ***!
   \*********************************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1087,15 +1112,14 @@ __webpack_require__.r(__webpack_exports__);
 /*!*******************************************!*\
   !*** ./resources/js/components/VQuiz.vue ***!
   \*******************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _VQuiz_vue_vue_type_template_id_213411e0___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./VQuiz.vue?vue&type=template&id=213411e0& */ "./resources/js/components/VQuiz.vue?vue&type=template&id=213411e0&");
 /* harmony import */ var _VQuiz_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./VQuiz.vue?vue&type=script&lang=js& */ "./resources/js/components/VQuiz.vue?vue&type=script&lang=js&");
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _VQuiz_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _VQuiz_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -1125,7 +1149,7 @@ component.options.__file = "resources/js/components/VQuiz.vue"
 /*!********************************************************************!*\
   !*** ./resources/js/components/VQuiz.vue?vue&type=script&lang=js& ***!
   \********************************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1187,7 +1211,6 @@ var Answer = function Answer() {
   this.id = answer.id ? answer.id : temporaryId();
   this.answer = answer.answer ? answer.answer : '';
   this.is_correct = answer.is_correct ? answer.is_correct : false;
-  this.sort = answer.sort ? answer.sort : 0;
   this.question_id = answer.question_id ? answer.question_id : null;
 };
 
@@ -1214,7 +1237,7 @@ function () {
 
     this.id = quiz.id ? quiz.id : temporaryId();
     this.uuid = quiz.uuid ? quiz.uuid : null;
-    this.name = quiz.name ? quiz.name : null;
+    this.name = quiz.name ? quiz.name : '';
     this.description = quiz.description ? quiz.description : null;
     this.user_id = quiz.user_id ? quiz.user_id : null;
     this.questions = [];
@@ -1236,13 +1259,6 @@ function () {
   _createClass(Quiz, [{
     key: "answerAdd",
     value: function answerAdd(answer) {
-      if (answer.sort === undefined && answer.question_id) {
-        var answers = this.answers.filter(function (a) {
-          return a.question_id === answer.question_id;
-        });
-        answer.sort = answers.length;
-      }
-
       this.answers.push(new Answer(answer));
       return this;
     }
@@ -1258,6 +1274,7 @@ function () {
       this.answers.splice(this.answers.findIndex(function (answer) {
         return answer.id === answerId;
       }), 1);
+      return this;
     }
   }, {
     key: "questionRemove",
@@ -1267,9 +1284,28 @@ function () {
       }
 
       this.answers = this.getQuestionAnswers(questionId);
-      this.questions.splice(this.questions.findIndex(function (answer) {
-        return answer.id === questionId;
+      this.questions.splice(this.questions.findIndex(function (question) {
+        return question.id === questionId;
       }), 1);
+      return this;
+    }
+  }, {
+    key: "questionMoveUp",
+    value: function questionMoveUp(qId) {
+      var questionIndex = this.questions.findIndex(function (q) {
+        return q.id === qId;
+      });
+      console.log(questionIndex);
+
+      if (questionIndex === 0) {
+        this.questions.push(this.questions.shift());
+      } else {
+        var replacement = this.questions[questionIndex - 1];
+        this.questions[questionIndex - 1] = this.questions[questionIndex];
+        this.questions[questionIndex] = replacement;
+      }
+
+      return this;
     }
   }, {
     key: "getQuestionAnswers",
@@ -1277,18 +1313,8 @@ function () {
       var answers = this.answers.filter(function (answer) {
         return answer.question_id === questionId;
       });
-      answers.sort(function (a, b) {
-        return a.sort - b.sort;
-      });
       return answers;
-    } // Currently not working
-    // moveQuestionUp(index) {
-    //     this.questions = moveArrayItemUp(this.questions, index)
-    // }
-    // moveAnswerUp(index) {
-    //     this.answers = moveArrayItemUp(this.answers, index)
-    // }
-    // Checks & Validation
+    } // Checks & Validation
 
   }, {
     key: "hasEnoughQuestions",
@@ -1389,6 +1415,11 @@ function () {
       });
       return isMissingCorrectAnswer;
     }
+  }, {
+    key: "isNameBlank",
+    value: function isNameBlank() {
+      return this.name === '' || this.name === null ? true : false;
+    }
   }]);
 
   return Quiz;
@@ -1405,7 +1436,7 @@ function () {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /home/sl/Desktop/quiz-manager/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! I:\quiz-manager\resources\js\app.js */"./resources/js/app.js");
 
 
 /***/ })

@@ -29,17 +29,25 @@
         <div id="quiz-region">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card my-3" v-for="(question, qIndex) in quiz.questions">
+                    <div class="card my-3" v-for="(question, qIndex) in quiz.questions" :key="qIndex+question.question">
                         <div class="card-header">
                             <div class="input-group">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text">Question:</span>
                                 </div>
                                 <input type="text" class="form-control" v-model="question.question">
+                                <div class="input-group-append" id="button-addon3">
+                                    <button class="btn btn-primary" type="button" @click="quiz.questionMoveUp(question.id);$forceUpdate()">
+                                        Move Up
+                                    </button>
+                                    <button class="btn btn-outline-primary" type="button" @click="quiz.questionRemove(question.id)">
+                                        &times;
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="input-group mb-3" v-for="(answer, aIndex) in quiz.getQuestionAnswers(question.id)">
+                            <div class="input-group mb-3" v-for="(answer, aIndex) in quiz.getQuestionAnswers(question.id)" :key="aIndex">
                                 <div class="input-group-prepend">
                                     <div class="input-group-text">
                                         <input type="checkbox" aria-label="Checkbox for following text input" v-model="answer.is_correct">
@@ -47,27 +55,12 @@
                                 </div>
                                 <input type="text" class="form-control" placeholder="Answer Here..." v-model="answer.answer">
                                 <div class="input-group-append" id="button-addon3">
-                                    <!-- <button class="btn btn-secondary" type="button" @click="moveAnswerUp(qIndex,aIndex)">
-                                        Move Up
-                                    </button> -->
                                     <button class="btn btn-outline-secondary" type="button" @click="quiz.answerRemove(answer.id)">
                                             &times;
                                     </button>
                                 </div>
                             </div>
-                            <div class="btn-toolbar justify-content-between">
-                                <div class="btn-group mr-2">
-                                    <button class="btn btn-primary" type="submit" @click="quiz.answerAdd({question_id:question.id})">+ Add Answer</button>
-                                </div>
-                                <div class="btn-group">
-                                    <!-- <button class="btn btn-secondary" type="button" @click="moveQuestionUp(qIndex)">
-                                        Move Up
-                                    </button> -->
-                                    <button class="btn btn-danger" type="button" @click="quiz.questionRemove(qIndex)">
-                                        Delete Question
-                                    </button>
-                                </div>
-                            </div>
+                            <button class="btn btn-primary" type="submit" @click="quiz.answerAdd({question_id:question.id})">+ Add Answer</button>
                         </div>
                     </div>
                 </div>
@@ -101,7 +94,10 @@ export default {
         },
         submitQuiz() {
             let canSubmit = true
-            if (!this.quiz.hasEnoughQuestions()) {
+            if (this.quiz.isNameBlank()) {
+                this.showAlertError('The name of the quiz can\'t be blank')
+                canSubmit = false
+            } else if (!this.quiz.hasEnoughQuestions()) {
                 this.showAlertError('You\'re required to have at least one question.')
                 canSubmit = false
             } else if (this.quiz.hasBlankQuestions()) {
