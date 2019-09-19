@@ -41,7 +41,8 @@ class QuizController extends Controller
     {
         if(!Auth::user()->canCreateQuiz())
         {
-            abort(403, 'Unauthorized action.');
+            // abort(403, 'Unauthorized action.');
+            return redirect()->back();
         }
         return view('quiz.create');
     }
@@ -56,7 +57,8 @@ class QuizController extends Controller
     {
         if(!Auth::user()->canCreateQuiz())
         {
-            abort(403, 'Unauthorized action.');
+            // abort(403, 'Unauthorized action.');
+            return redirect()->back();
         }
 
         $quizData = json_decode($request->quiz, true);
@@ -99,7 +101,8 @@ class QuizController extends Controller
     {
         if(!Auth::user()->canEditQuiz())
         {
-            abort(403, 'Unauthorized action.');
+            // abort(403, 'Unauthorized action.');
+            return redirect()->back();
         }
 
         $quiz = Quiz::with([
@@ -128,7 +131,8 @@ class QuizController extends Controller
     {
         if(!Auth::user()->canEditQuiz())
         {
-            abort(403, 'Unauthorized action.');
+            // abort(403, 'Unauthorized action.');
+            return redirect()->back();
         }
 
         $quizData = json_decode($request->quiz, true);
@@ -149,7 +153,8 @@ class QuizController extends Controller
     {
         if(!Auth::user()->canDeleteQuiz())
         {
-            abort(403, 'Unauthorized action.');
+            // abort(403, 'Unauthorized action.');
+            return redirect()->back();
         }
 
         $quiz = Quiz::with(['creator','questions'])
