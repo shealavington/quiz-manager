@@ -68,7 +68,8 @@
             @if (Route::has('login'))
                 <div class="top-right links">
                     @auth
-                        <a href="{{ url('/quizzes') }}">Home</a>
+                        <span>Welcome back {{ Auth::user()->name }}</span>
+                        <a href="{{ url('/quizzes') }}">View Quizzes</a>
                     @else
                         <a href="{{ route('login') }}">Login</a>
 
@@ -80,8 +81,8 @@
             @endif
 
             <div class="content">
-                <div class="title m-b-md">
-                    {{ config('app.name', 'Laravel') }}
+                <div class="m-b-md">
+                    <h1 class="title">{{ config('app.name', 'Laravel') }}</h1>
                 </div>
 
                 <div class="links">
