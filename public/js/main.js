@@ -49232,8 +49232,8 @@ window.axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js")
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! I:\quiz-manager\resources\js\main.js */"./resources/js/main.js");
-module.exports = __webpack_require__(/*! I:\quiz-manager\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /home/sl/Desktop/quiz-manager/resources/js/main.js */"./resources/js/main.js");
+module.exports = __webpack_require__(/*! /home/sl/Desktop/quiz-manager/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

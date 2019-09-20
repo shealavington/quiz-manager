@@ -1470,7 +1470,7 @@ function () {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! I:\quiz-manager\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/sl/Desktop/quiz-manager/resources/js/app.js */"./resources/js/app.js");
 
 
 /***/ })
