@@ -29,13 +29,13 @@
         <div id="quiz-region">
             <div class="row">
                 <div class="col-md-12">
-                    <div id="questions" class="card my-3" v-for="(question, qIndex) in quiz.questions" :key="qIndex+question.question">
+                    <div id="questions" class="card my-3" v-for="(question, qIndex) in quiz.questions" :key="qIndex">
                         <div class="card-header">
                             <div class="input-group">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text">Question:</span>
                                 </div>
-                                <input type="text" class="form-control" v-model="question.question">
+                                <input id="'question_'+question.id" type="text" class="form-control" placeholder="Question Here..." v-model="question.question">
                                 <div class="input-group-append" id="button-addon3">
                                     <button class="btn btn-primary" type="button" v-if="quiz.questions.length > 1" @click="quiz.questionMoveUp(question.id);$forceUpdate()">
                                         Move Up
@@ -53,7 +53,7 @@
                                         <input type="checkbox" aria-label="Checkbox for following text input" v-model="answer.is_correct">
                                     </div>
                                 </div>
-                                <input type="text" class="form-control" placeholder="Answer Here..." v-model="answer.answer">
+                                <input id="'answer_'+answer.id" type="text" class="form-control" placeholder="Answer Here..." v-model="answer.answer">
                                 <div class="input-group-append" id="button-addon3">
                                     <button class="btn btn-outline-secondary" type="button" @click="quiz.answerRemove(answer.id)">
                                             &times;

@@ -544,7 +544,7 @@ var render = function() {
             return _c(
               "div",
               {
-                key: qIndex + question.question,
+                key: qIndex,
                 staticClass: "card my-3",
                 attrs: { id: "questions" }
               },
@@ -563,7 +563,11 @@ var render = function() {
                         }
                       ],
                       staticClass: "form-control",
-                      attrs: { type: "text" },
+                      attrs: {
+                        id: "'question_'+question.id",
+                        type: "text",
+                        placeholder: "Question Here..."
+                      },
                       domProps: { value: question.question },
                       on: {
                         input: function($event) {
@@ -707,6 +711,7 @@ var render = function() {
                             ],
                             staticClass: "form-control",
                             attrs: {
+                              id: "'answer_'+answer.id",
                               type: "text",
                               placeholder: "Answer Here..."
                             },
