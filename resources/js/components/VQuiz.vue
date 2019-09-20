@@ -107,7 +107,7 @@ export default {
                 this.showAlertError('One or more of the questions are a duplicate.')
                 canSubmit = false
             } else if (!this.quiz.hasEnoughAnswers()) {
-                this.showAlertError('You must have no less or no more than 3-5 answers for each this.quiz.')
+                this.showAlertError('You must have no less or no more than 3-5 answers for each question.')
                 canSubmit = false
             } else if (this.quiz.hasBlankAnswers()) {
                 this.showAlertError('One or more of the answers are blank.')
