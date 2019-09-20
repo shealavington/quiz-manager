@@ -84,7 +84,6 @@ export default class Quiz {
     }
     questionMoveUp(qId) {
         let questionIndex = this.questions.findIndex(q => q.id === qId)
-        console.log(questionIndex)
         if(questionIndex === 0) {
             this.questions.push(this.questions.shift())
         } else {
@@ -126,7 +125,6 @@ export default class Quiz {
         this.questions.forEach(question => {
             let answers = this.getQuestionAnswers(question.id)
             if(answers.length < 3 || answers.length > 5) {
-                console.log('aa')
                 hasEnough = false
             }
         })

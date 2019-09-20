@@ -1334,7 +1334,6 @@ function () {
       var questionIndex = this.questions.findIndex(function (q) {
         return q.id === qId;
       });
-      console.log(questionIndex);
 
       if (questionIndex === 0) {
         this.questions.push(this.questions.shift());
@@ -1395,7 +1394,6 @@ function () {
         var answers = _this2.getQuestionAnswers(question.id);
 
         if (answers.length < 3 || answers.length > 5) {
-          console.log('aa');
           hasEnough = false;
         }
       });
