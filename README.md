@@ -3,11 +3,13 @@ Software Developer L4 — Synoptic Project
 
 ## Getting Started
 
-Install packages: `composer install`
+Install PHP packages: `composer install`
+Install Javascript packages: `npm install`
 
 ## Serving the website
 
 Populate the database: `php artisan migrate:fresh --seed`
+
 Serve the HTTP pages: `php artisan serve`
 
 ## Tests:
